@@ -203,7 +203,7 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  z-index: 4;
 }
 
 .line-container:hover {
@@ -228,7 +228,7 @@ html {
   align-items: center;
   transform: translateX(300px);
   transition: ease transform 300ms, ease-in background-color 200ms;
-  z-index: 1;
+  z-index: 3;
 }
 
 .show {
@@ -293,6 +293,21 @@ html {
   align-items: center;
   transition: ease-in color 200ms;
 }
+
+.hm-outer-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+}
+
+.appear {
+  display: flex;
+}
+
 /*------------------------------HOME------------------------------*/
 .home {
   display: flex;

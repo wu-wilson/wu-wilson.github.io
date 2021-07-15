@@ -128,7 +128,7 @@ const Navbar = ({
         getScrollLink={getScrollLink}
       />
       <div className="logo-container">
-        <img src={logo} alt="logo" onClick={directHome} />
+        <img src={logo} alt="logo" onClick={directHome} style={{ zIndex: 1 }} />
       </div>
       <div className="nb-items-container">
         {navItems.map((item) => (

@@ -113,6 +113,10 @@ const HamMenu = ({
           </div>
         </div>
       </div>
+      <div
+        className={`hm-outer-box ${open ? "appear" : null}`}
+        onClick={closeMenu}
+      />
     </div>
   );
 };
