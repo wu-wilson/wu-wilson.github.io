@@ -87,6 +87,11 @@ const HamMenu = ({
         className={`hm-menu ${open ? "show" : null}`}
         style={{
           backgroundColor: `${theme === "light" ? "#fafafa" : "#2c2c2c"}`,
+          boxShadow: `${
+            theme === "light"
+              ? "3px 0 20px -2px lightgrey"
+              : "3px 0 20px -2px black"
+          }`,
         }}
       >
         <div className="hm-box">
@@ -108,7 +113,7 @@ const HamMenu = ({
               </div>
             </div>
           ))}
-          <div className="hm-item">
+          <div className="hm-toggle">
             <ToggleTheme theme={theme} setTheme={setTheme} />
           </div>
         </div>
