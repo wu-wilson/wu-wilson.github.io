@@ -1,11 +1,6 @@
 import { RiQuestionAnswerLine } from "react-icons/ri";
-import resume from "../Documents/resume.pdf";
 
 const Home = ({ theme }: { theme: string }) => {
-  const openResume = () => {
-    window.open(resume);
-  };
-
   return (
     <div
       className="home"
@@ -31,14 +26,15 @@ const Home = ({ theme }: { theme: string }) => {
           I’m an Atlanta-based software engineer. welcome to my space on the
           web!
         </div>
-        <button
-          className={`resume-btn ${
-            theme === "light" ? "light-btn" : "dark-btn"
-          }`}
-          onClick={openResume}
-        >
-          resume
-        </button>
+        <a className="resume-link" href="wilsonwu-resume.pdf">
+          <button
+            className={`resume-btn ${
+              theme === "light" ? "light-btn" : "dark-btn"
+            }`}
+          >
+            resume
+          </button>
+        </a>
       </div>
     </div>
   );

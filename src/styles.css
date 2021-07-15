@@ -370,6 +370,10 @@ html {
   background-color: #068eb8;
 }
 
+.resume-link {
+  text-decoration: none;
+}
+
 /*------------------------------ABOUT------------------------------*/
 .about {
   display: flex;
