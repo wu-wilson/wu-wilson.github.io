@@ -26,7 +26,7 @@ const Home = ({ theme }: { theme: string }) => {
           I’m an Atlanta-based software engineer. welcome to my space on the
           web!
         </div>
-        <a className="resume-link" href="wilsonwu-resume.pdf">
+        <a className="resume-link" href="wilsonwu-resume.pdf" target="_blank">
           <button
             className={`resume-btn ${
               theme === "light" ? "light-btn" : "dark-btn"
