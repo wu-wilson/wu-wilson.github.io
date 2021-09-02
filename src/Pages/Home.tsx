@@ -23,7 +23,7 @@ const Home = ({ theme }: { theme: string }) => {
           className="description"
           style={{ color: `${theme === "light" ? "black" : "white"}` }}
         >
-          I’m an Atlanta-based software engineer. welcome to my space on the
+          I’m an Atlanta-based software engineer. Welcome to my space on the
           web!
         </div>
         <a className="resume-link" href="wilsonwu-resume.pdf" target="_blank">
