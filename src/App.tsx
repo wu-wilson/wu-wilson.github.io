@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import Projects from "./Pages/Projects";
@@ -61,12 +60,6 @@ const App = () => {
   display the webpage. */
   return loading ? null : (
     <div className="app-container">
-      <Helmet>
-        <meta
-          name="theme-color"
-          content={theme === "light" ? "#ffffff" : "#353535"}
-        />
-      </Helmet>
       <ContactBar theme={theme} />
       <Navbar theme={theme} setTheme={setTheme} />
       <Home theme={theme} />
