@@ -28,6 +28,15 @@ const App = () => {
     localStorage.setItem("theme", JSON.stringify(theme));
   }, [theme]);
 
+  // Set document body to the correct color.
+  useEffect(() => {
+    if (theme === "light") {
+      document.body.style.backgroundColor = "white";
+    } else {
+      document.body.style.backgroundColor = "#2D3133";
+    }
+  }, [theme]);
+
   // Scroll to the top of the webpage.
   const scrollTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
