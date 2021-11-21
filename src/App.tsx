@@ -42,15 +42,6 @@ const App = () => {
     };
   }, []);
 
-  // Set the html body to the appropriate color
-  useEffect(() => {
-    if (theme === "light") {
-      document.body.style.backgroundColor = "white";
-    } else {
-      document.body.style.backgroundColor = "#353535";
-    }
-  });
-
   // Open github code for this web-app.
   const redirect = () => {
     window.open("https://github.com/wu-wilson/wu-wilson.github.io");
