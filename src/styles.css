@@ -1,7 +1,3 @@
-body {
-  transition: ease-in background-color 200ms;
-}
-
 /*------------------------------APP------------------------------*/
 .app-container {
   position: absolute;

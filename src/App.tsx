@@ -48,25 +48,17 @@ const App = () => {
     window.open("https://github.com/wu-wilson/wu-wilson.github.io");
   };
 
-  useEffect(() => {
-    if (theme === "light") {
-      document.body.style.backgroundColor = "#ffffff";
-    } else {
-      document.body.style.backgroundColor = "#353535";
-    }
-  }, [theme]);
-
   /* If the page is still loading, return a blank page. Otherwise, 
   display the webpage. */
   return loading ? null : (
     <div className="app-container">
-      {/* <Helmet>
+      <Helmet>
         <meta
           name="theme-color"
           content={theme === "light" ? "#ffffff" : "#353535"}
-          style={{ transition: "ease-in color 200ms" }}
+          style={{ transition: "ease-in content 200ms" }}
         />
-      </Helmet> */}
+      </Helmet>
       <ContactBar theme={theme} />
       <Navbar theme={theme} setTheme={setTheme} />
       <Home theme={theme} />
