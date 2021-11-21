@@ -56,7 +56,6 @@ const App = () => {
         <meta
           name="theme-color"
           content={theme === "light" ? "#ffffff" : "#353535"}
-          style={{ transition: "ease-in content 200ms" }}
         />
       </Helmet>
       <ContactBar theme={theme} />
