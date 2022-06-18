@@ -15,7 +15,7 @@ const paragraphs: paragraph[] = [
   {
     id: 0,
     content:
-      "My name is Wilson Wu, and I’m a sophomore at Emory University pursuing a B.S. in computer science.",
+      "My name is Wilson Wu, and I’m a junior at Emory University pursuing a B.S. in computer science.",
   },
   {
     id: 1,
