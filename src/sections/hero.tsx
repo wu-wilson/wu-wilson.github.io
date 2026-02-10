@@ -51,9 +51,15 @@ function Hero() {
       <span className="w-70 text-center">
         I build apps that feel simple, clean, and easy to use.
       </span>
-      <Button variant="outline">
-        <FiFileText />
-        Resume
+      <Button variant="outline" asChild>
+        <a
+          href="Wilson_Wu_Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FiFileText />
+          Resume
+        </a>
       </Button>
       <div className="flex gap-3">
         {socials.map(({ href, label, icon: Icon }) => (
