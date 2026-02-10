@@ -1,12 +1,10 @@
 import hammer from "@/assets/hammer.png";
-import phone from "@/assets/phone.png";
 import resume from "@/assets/resume.png";
 import chest from "@/assets/chest.png";
 import { Sheet, SpriteProps } from "./types";
 
 const SPRITESHEETS: Record<Sheet, string> = {
   hammer,
-  phone,
   resume,
   chest,
 };
