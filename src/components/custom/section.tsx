@@ -1,5 +1,11 @@
-import Sprite from "../sprite/sprite";
-import { SectionProps } from "./types";
+import { ReactNode } from "react";
+import Sprite, { Sheet } from "./sprite";
+
+type SectionProps = {
+  children: ReactNode;
+  title: string;
+  spritesheet: Sheet;
+};
 
 function Section({ children, title, spritesheet }: SectionProps) {
   return (

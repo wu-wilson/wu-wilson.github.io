@@ -1,4 +1,4 @@
-import Section from "@/components/custom/section/section";
+import Section from "@/components/custom/section";
 
 function Projects() {
   return (

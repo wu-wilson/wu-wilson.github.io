@@ -1,7 +1,12 @@
 import hammer from "@/assets/hammer.png";
 import resume from "@/assets/resume.png";
 import chest from "@/assets/chest.png";
-import { Sheet, SpriteProps } from "./types";
+
+export type Sheet = "chest" | "hammer" | "resume";
+
+type SpriteProps = {
+  sheet: Sheet;
+};
 
 const SPRITESHEETS: Record<Sheet, string> = {
   hammer,
