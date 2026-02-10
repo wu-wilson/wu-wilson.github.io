@@ -121,3 +121,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes sprite14 {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -1344px 0;
+  }
+}
+
+.animate-sprite14 {
+  animation: sprite14 2.5s steps(14) infinite;
+}
