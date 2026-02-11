@@ -10,7 +10,7 @@ const paragraphs = [
 function About() {
   return (
     <Section title="ABOUT ME" spritesheet="chest">
-      <div className="flex flex-col gap-5 text-left">
+      <div className="flex flex-col gap-6 text-left">
         {paragraphs.map((p, i) => (
           <p key={i} className="max-w-125 text-sm px-5">
             {p}
