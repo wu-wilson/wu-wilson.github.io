@@ -2,7 +2,7 @@
 
 This is the code for my personal portfolio website.
 
-## 🌐 Deployment
+## ☁️ Deployment
 
 The site is deployed using GitHub Pages. Check it out below:
 
