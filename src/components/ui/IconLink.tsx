@@ -20,7 +20,7 @@ function IconLink({
       rel="noopener noreferrer"
       aria-label={label}
       className="
-        flex items-center gap-5 rounded-md border-2 p-2
+        flex items-center gap-2 rounded-md border-2 p-2
         transition-transform duration-200
         hover:-translate-y-1
         hover:text-(--primary)
