@@ -19,7 +19,7 @@ function Sprite({ spritesheet }: SpriteProps) {
 
   return (
     <div
-      className="h-24 w-32 overflow-hidden bg-no-repeat bg-size-[1792px_100px] [image-rendering:pixelated] animate-spritesheet"
+      className="h-25 w-32 overflow-hidden bg-no-repeat bg-size-[1792px_100px] [image-rendering:pixelated] animate-spritesheet"
       style={{ backgroundImage: `url(${url})` }}
     />
   );
