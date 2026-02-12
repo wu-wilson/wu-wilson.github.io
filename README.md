@@ -6,7 +6,7 @@ This is the code for my personal portfolio website.
 
 The site is deployed using GitHub Pages. Check it out below:
 
-[![Deployed Site](https://github.com/user-attachments/assets/e7e55995-43cc-4788-b57e-d73bd8891dde)](https://wilsonwu.dev/)
+[![Deployed Site](https://github.com/user-attachments/assets/36328fc6-20e0-42f4-903d-dda5a09d52fb)](https://wilsonwu.dev/)
 
 ## 🚀 Stack
 
