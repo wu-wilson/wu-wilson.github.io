@@ -16,7 +16,7 @@ function NavigationBar() {
   const scrollDirection = useScrollDirection();
   const isAtTop = useIsAtTop();
 
-  const hide = scrollDirection === "down";
+  const hide = !isAtTop && scrollDirection === "down";
   const showShadow = !isAtTop;
 
   return (
