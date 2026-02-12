@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "jsx": "react-jsx",
-    "target": "ES2023",
+    "target": "ESNext",
     "module": "ESNext",
+    "jsx": "react-jsx",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
     "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {

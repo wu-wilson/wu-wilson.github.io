@@ -1,14 +1,3 @@
-# macOS system files
-.DS_Store
-
-# Node dependencies
-node_modules
-
-# Build outputs
-dist
-dist-ssr
-*.tsbuildinfo
-
 # Logs
 logs
 *.log
@@ -18,16 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Local-only or dev tools
+node_modules
+dist
+dist-ssr
 *.local
-.env
 
-# VSCode and JetBrains IDEs
-**/.vscode/
+# Editor directories and files
+.vscode/*
 !.vscode/extensions.json
 .idea
-
-# Misc editor files
+.DS_Store
 *.suo
 *.ntvs*
 *.njsproj

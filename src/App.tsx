@@ -1,19 +1,22 @@
-import NavigationBar from "./components/custom/navigation-bar";
-import About from "./sections/about";
-import Jobs from "./sections/jobs";
-import Projects from "./sections/projects";
-import Hero from "./sections/hero";
+import Footer from "./components/layout/Footer";
+import NavigationBar from "./components/layout/NavigationBar";
+import AboutSection from "./components/sections/about/AboutSection";
+import ExperienceSection from "./components/sections/experience/ExperienceSection";
+import HeroSection from "./components/sections/hero/HeroSection";
+import ProjectsSection from "./components/sections/projects/ProjectsSection";
 
 function App() {
+  const array = Array.from({ length: 100 }, (_, i) => i + 1);
   return (
-    <div className="flex flex-col w-full items-center">
+    <div className="flex flex-col items-center">
       <NavigationBar />
-      <div className="flex flex-col w-full max-w-7xl gap-6 my-6">
-        <Hero />
-        <About />
-        <Jobs />
-        <Projects />
+      <div className="flex flex-col items-center w-full max-w-5xl gap-15">
+        <HeroSection />
+        <AboutSection />
+        <ExperienceSection />
+        <ProjectsSection />
       </div>
+      <Footer />
     </div>
   );
 }
