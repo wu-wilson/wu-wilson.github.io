@@ -12,7 +12,9 @@ export function useIsAtTop(threshold: number = 10) {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [threshold]);
 
   return isAtTop;

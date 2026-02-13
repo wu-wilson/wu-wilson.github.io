@@ -6,7 +6,6 @@ import HeroSection from "./components/sections/hero/HeroSection";
 import ProjectsSection from "./components/sections/projects/ProjectsSection";
 
 function App() {
-  const array = Array.from({ length: 100 }, (_, i) => i + 1);
   return (
     <div className="flex flex-col items-center">
       <NavigationBar />
