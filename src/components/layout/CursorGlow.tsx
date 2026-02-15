@@ -11,11 +11,11 @@ export default function CursorGlow() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-50 opacity-10"
+      className="pointer-events-none fixed inset-0 z-50"
       style={{
         background: `radial-gradient(
           800px at ${position.x}px ${position.y}px,
-          var(--primary),
+          color-mix(in srgb, var(--primary) 10%, transparent),
           transparent 70%
         )`,
       }}
