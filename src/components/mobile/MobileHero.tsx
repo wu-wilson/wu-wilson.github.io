@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Arrow } from '../common/Arrow';
+
 /** The two hero words share one weight and size on mobile. */
 const WORD: React.CSSProperties = {
   fontWeight: 900,
@@ -44,8 +46,8 @@ export const MobileHero: React.FC = () => (
       <div className="font-hand" style={{ fontWeight: 500, fontSize: 13, letterSpacing: '0.12em', color: 'rgb(var(--muted-2))' }}>
         SCROLL
       </div>
-      <div className="font-display animate-cue-bounce" style={{ fontWeight: 400, fontSize: 42, lineHeight: 1, color: 'rgb(var(--brand))' }}>
-        ↓
+      <div className="animate-cue-bounce" style={{ fontSize: 42, lineHeight: 1, color: 'rgb(var(--brand))' }}>
+        <Arrow dir="down" size={0.82} style={{ verticalAlign: 'middle' }} />
       </div>
     </div>
   </div>

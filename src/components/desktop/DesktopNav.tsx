@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Arrow } from '../common/Arrow';
+
 import { RESUME_URL, SCROLL_TARGETS } from '../../constants/config';
 import { NAV_LINKS } from '../../constants/content';
 
@@ -69,7 +71,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({ onJump }) => (
           className="font-hand wobble-md bg-brand text-paper transition-colors hover:bg-brand-dark"
           style={{ fontWeight: 600, fontSize: 12, padding: '8px 14px' }}
         >
-          RÉSUMÉ ↗
+          RÉSUMÉ<Arrow style={{ marginLeft: 3 }} />
         </a>
       </div>
     </div>

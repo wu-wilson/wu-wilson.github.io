@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Arrow } from '../common/Arrow';
+
 /** Oversized hand-drawn display name; the two words share one weight and size. */
 const WORD: React.CSSProperties = {
   fontWeight: 900,
@@ -82,10 +84,10 @@ export const Hero: React.FC = () => (
         SCROLL
       </div>
       <div
-        className="font-display animate-cue-bounce"
-        style={{ fontWeight: 400, fontSize: 54, lineHeight: 1, color: 'rgb(var(--brand))' }}
+        className="animate-cue-bounce"
+        style={{ fontSize: 54, lineHeight: 1, color: 'rgb(var(--brand))' }}
       >
-        ↓
+        <Arrow dir="down" size={0.82} style={{ verticalAlign: 'middle' }} />
       </div>
     </div>
   </>

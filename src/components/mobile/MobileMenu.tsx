@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Arrow } from '../common/Arrow';
+
 import { RESUME_URL } from '../../constants/config';
 import { NAV_LINKS, SOCIALS } from '../../constants/content';
 
@@ -44,7 +46,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ onNavigate }) => (
         className="font-hand wobble-lg bg-brand text-paper"
         style={{ fontWeight: 600, fontSize: 13, padding: '15px 0', textAlign: 'center', marginTop: 22, display: 'block' }}
       >
-        RÉSUMÉ ↗
+        RÉSUMÉ<Arrow style={{ marginLeft: 3 }} />
       </a>
     </div>
     <div style={{ padding: '20px 24px', display: 'flex', gap: 14 }}>

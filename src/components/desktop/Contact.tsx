@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Arrow } from '../common/Arrow';
 import { CopyButton } from '../common/CopyButton';
 
 import { EMAIL } from '../../constants/config';
@@ -59,7 +60,7 @@ export const Contact: React.FC = () => (
             className="font-hand wobble-lg bg-ink text-paper-on-blue transition-colors hover:text-brand"
             style={{ fontWeight: 600, fontSize: 13, padding: '13px 20px' }}
           >
-            EMAIL ME ↗
+            EMAIL ME<Arrow style={{ marginLeft: 4 }} />
           </a>
           <CopyButton text={EMAIL} />
         </div>
@@ -73,7 +74,8 @@ export const Contact: React.FC = () => (
               className="font-hand text-muted-on-blue transition-colors hover:text-paper-on-blue"
               style={{ fontWeight: 600, fontSize: 11 }}
             >
-              {social.label} ↗
+              {social.label}
+              <Arrow size={0.92} style={{ marginLeft: 2 }} />
             </a>
           ))}
         </div>

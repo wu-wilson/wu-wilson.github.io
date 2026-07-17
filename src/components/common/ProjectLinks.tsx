@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Arrow } from './Arrow';
+
 interface ProjectLinksProps {
   liveUrl: string;
   sourceUrl: string;
@@ -28,7 +30,7 @@ export const ProjectLinks: React.FC<ProjectLinksProps> = ({
       className="font-hand text-brand"
       style={{ fontSize, fontWeight: 600 }}
     >
-      LIVE ↗
+      LIVE<Arrow style={{ marginLeft: 3 }} />
     </a>
     <a
       href={sourceUrl}
@@ -37,7 +39,7 @@ export const ProjectLinks: React.FC<ProjectLinksProps> = ({
       className="font-hand text-brand"
       style={{ fontSize, fontWeight: 600 }}
     >
-      SOURCE ↗
+      SOURCE<Arrow style={{ marginLeft: 3 }} />
     </a>
   </div>
 );

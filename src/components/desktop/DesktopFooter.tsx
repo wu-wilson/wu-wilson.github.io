@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Arrow } from '../common/Arrow';
+
 import { copyright, FOOTER_TAGLINE } from '../../constants/config';
 
 interface DesktopFooterProps {
@@ -48,7 +50,7 @@ export const DesktopFooter: React.FC<DesktopFooterProps> = ({ onTop }) => (
         className="font-hand text-muted-on-blue transition-colors hover:text-paper-on-blue"
         style={{ fontWeight: 500, fontSize: 10, cursor: 'pointer', background: 'transparent', border: 'none', padding: 0 }}
       >
-        TOP ↑
+        TOP<Arrow dir="up" style={{ marginLeft: 3 }} />
       </button>
     </div>
   </footer>
