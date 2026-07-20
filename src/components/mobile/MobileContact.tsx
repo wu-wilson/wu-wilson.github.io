@@ -14,7 +14,6 @@ import { SOCIALS } from '../../constants/content';
 export const MobileContact: React.FC = () => (
   <div
     data-fx="mContact"
-    data-screen-label="Mobile Contact"
     style={{ background: 'rgb(var(--brand-flood))', padding: '80px 24px 0', display: 'flex', flexDirection: 'column', gap: 14 }}
   >
     <div

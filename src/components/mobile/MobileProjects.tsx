@@ -14,7 +14,6 @@ import { PROJECTS } from '../../constants/content';
 export const MobileProjects: React.FC = () => (
   <div
     data-fx="mProj"
-    data-screen-label="Mobile Projects"
     style={{ padding: '72px 24px 64px', display: 'flex', flexDirection: 'column', gap: 52 }}
   >
     <h2

@@ -13,7 +13,7 @@ export interface Project {
   tagsShort: string[];
   liveUrl: string;
   sourceUrl: string;
-  /** Persistence key / asset base name for the project screenshot. */
+  /** Screenshot asset base name; resolves to `/projects/{imageKey}.png`. */
   imageKey: string;
   /** Alt text for the project screenshot. */
   imageAlt: string;

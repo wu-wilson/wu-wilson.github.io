@@ -4,7 +4,7 @@
 
 wilsonwu.io is Wilson Wu's personal portfolio: a single-page, fully static, frontend-only site with a hand-drawn "notebook" identity (warm paper, ruled lines, sketched wobble-boxes, two handwriting fonts, one blue accent) — deliberately distinct from the Krawly / Tallies / Rampr house style. Its signature is **one continuous travelling line** that threads every scene: it underlines the hero "WU", hooks through the About emphasis, traces each Projects frame, *becomes* the Experience career chart, and finishes as the Contact email underline. There is no backend — contact is `mailto:` + clipboard copy, and the résumé is a static PDF.
 
-The site ships **two independent implementations**, chosen at runtime by viewport width (`≤ 820px` → mobile):
+The site ships **two independent implementations**, chosen at runtime by viewport size — mobile when the viewport is `≤ 820px` wide *or* too short for the pinned film (chiefly phones in landscape, which clear the width breakpoint):
 
 - **Desktop — a pinned scroll film.** A tall track (`1500vh`, `FILM_LENGTH_VH` — the single knob for overall pace) with a `position: sticky` stage. A single `requestAnimationFrame` loop (`useFilmEngine`) maps scroll position to a smoothed progress value `p ∈ [0,1]` and positions all five scenes (Hero → About → Projects → Experience → Contact), the flood, and the line as pure functions of `p`. Elements are located by a `data-fx` marker so scenes can live in separate components while one engine drives them.
 - **Mobile — a flowing document.** Normal vertical scroll; blocks reveal on entry via `IntersectionObserver` (`useIntersectionReveal`), and a margin line scrubs alongside the reader (`useMobileFilm`). A hamburger opens a full-screen menu takeover.
@@ -19,7 +19,7 @@ The site ships **two independent implementations**, chosen at runtime by viewpor
 
 ## Key Decisions
 
-- **Two implementations, not one responsive tree.** The pinned film and the flowing document are different enough — different DOM, different motion model — that a single responsive component would be worse than two focused ones. `App` renders exactly one, chosen by a `matchMedia` breakpoint that matches the engine's `820px` boundary.
+- **Two implementations, not one responsive tree.** The pinned film and the flowing document are different enough — different DOM, different motion model — that a single responsive component would be worse than two focused ones. `App` renders exactly one, chosen by a `matchMedia` query: the mobile document when the viewport is at or below the engine's `820px` width boundary, or shorter than the film needs (`FILM_MIN_HEIGHT`).
 - **Imperative animation by design.** Porting a pixel-and-motion-exact scroll film to per-property React state would be slower and less faithful. The engines mutate `data-fx` elements directly inside the rAF loop; React owns structure and content, the engine owns motion. This is the one place inline `style` and direct DOM writes are the right tool.
 - **One line, measured from layout.** The travelling line is a single path rebuilt from real measured boxes (not hardcoded coordinates), so it stays correct across viewport sizes and font loads. It reads as continuous because both the drawing head and the erasing tail advance together — a moving dash-window, not a static draw.
 - **Tokens, even in the engine.** Colors the engine assigns are `rgb(var(--token))` strings, not hex — so the whole palette still lives in `index.css`. Inline `style` carries only layout, transforms, fluid sizes, and JS-derived values.

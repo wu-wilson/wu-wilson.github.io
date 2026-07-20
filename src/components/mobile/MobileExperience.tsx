@@ -13,7 +13,6 @@ const ENTRIES = [...EXPERIENCE].reverse();
 export const MobileExperience: React.FC = () => (
   <div
     data-fx="mExp"
-    data-screen-label="Mobile Experience"
     style={{ padding: '72px 24px 64px', display: 'flex', flexDirection: 'column', gap: 26 }}
   >
     <h2

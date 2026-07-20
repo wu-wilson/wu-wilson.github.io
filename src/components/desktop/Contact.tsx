@@ -15,7 +15,6 @@ import { SOCIALS } from '../../constants/content';
 export const Contact: React.FC = () => (
   <div
     data-fx="contact"
-    data-screen-label="Scene 5 Contact"
     style={{
       position: 'absolute',
       inset: 0,

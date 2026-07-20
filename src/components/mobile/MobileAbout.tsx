@@ -10,7 +10,6 @@ import { ABOUT } from '../../constants/content';
 export const MobileAbout: React.FC = () => (
   <div
     data-fx="mAbout"
-    data-screen-label="Mobile About"
     style={{ padding: '110px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
   >
     <div

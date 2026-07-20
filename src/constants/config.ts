@@ -16,6 +16,14 @@ export const FILM_LENGTH_VH = 1500;
 export const MOBILE_MAX_WIDTH = 820;
 
 /**
+ * Minimum viewport height (px) the pinned desktop film needs. Its sticky stage is a single
+ * `100vh` frame every scene must fit inside; below this the film is too cramped (most visibly
+ * the Experience chart), so short viewports — chiefly phones in landscape, which clear the
+ * width breakpoint — fall back to the flowing mobile document, which has no height requirement.
+ */
+export const FILM_MIN_HEIGHT = 520;
+
+/**
  * Normalized scroll targets (0..1 of the desktop track) for nav jumps. Each lands in its
  * scene's settled window — fully revealed, past its intro animation, and not yet leaving — so
  * the destination reads as stable rather than mid-transition.

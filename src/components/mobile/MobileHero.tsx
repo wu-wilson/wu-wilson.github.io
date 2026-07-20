@@ -18,7 +18,6 @@ const WORD: React.CSSProperties = {
 export const MobileHero: React.FC = () => (
   <div
     data-fx="mHero"
-    data-screen-label="Mobile Hero"
     style={{
       minHeight: '100svh',
       display: 'flex',

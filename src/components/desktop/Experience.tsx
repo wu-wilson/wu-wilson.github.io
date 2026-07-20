@@ -28,7 +28,6 @@ const NODE_HIDDEN: React.CSSProperties = {
 export const Experience: React.FC = () => (
   <div
     data-fx="exp"
-    data-screen-label="Scene 4 Experience"
     style={{
       position: 'absolute',
       inset: 0,

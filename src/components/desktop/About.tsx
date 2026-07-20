@@ -10,7 +10,6 @@ import { ABOUT } from '../../constants/content';
 export const About: React.FC = () => (
   <div
     data-fx="about"
-    data-screen-label="Scene 2 About"
     style={{
       position: 'absolute',
       inset: 0,

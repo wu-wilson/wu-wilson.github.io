@@ -20,7 +20,6 @@ export const Hero: React.FC = () => (
   <>
     <div
       data-fx="hero"
-      data-screen-label="Scene 1 Hero"
       style={{
         position: 'absolute',
         inset: 0,

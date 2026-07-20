@@ -14,7 +14,6 @@ import { PROJECTS } from '../../constants/content';
 export const Projects: React.FC = () => (
   <div
     data-fx="proj"
-    data-screen-label="Scene 3 Projects"
     style={{ position: 'absolute', inset: 0, zIndex: 10, opacity: 0, visibility: 'hidden' }}
   >
     <div style={{ width: 'min(1280px, 92vw)', height: '100%', margin: '0 auto', position: 'relative' }}>
