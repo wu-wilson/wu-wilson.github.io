@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Shantell+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,152 +7,90 @@
 :root {
   /* Color tokens stored as space-separated RGB channels (hex in comments) and consumed via
      `rgb(var(--token) / <alpha-value>)` in tailwind.config.js, so opacity modifiers resolve.
-     Warm-paper notebook palette — a hand-drawn identity distinct from the house style. */
-
-  /* Surface + ink */
-  --paper: 245 241 232; /* #F5F1E8  the notebook page — fills the whole viewport */
-  --ink: 38 36 31; /* #26241F  primary ink */
-  --ink-soft: 69 64 58; /* #45403A  secondary ink (names, emphasis) */
-
-  /* Brand blue (the pen) */
-  --brand: 42 95 215; /* #2A5FD7  the travelling line + links */
-  --brand-dark: 27 70 171; /* #1B46AB  link hover */
-  --brand-flood: 46 86 212; /* #2E56D4  the contact flood panel */
-
-  /* Muted ink ramp, strongest use to faintest */
-  --muted-1: 95 90 78; /* #5F5A4E  body copy */
-  --muted-2: 138 131 116; /* #8A8374  labels, tag text */
-  --muted-3: 154 147 127; /* #9A937F  faint meta */
-
-  /* Pencil lines, tightest to lightest */
-  --line-1: 184 176 156; /* #B8B09C  tag / frame border */
-  --line-2: 176 168 148; /* #B0A894  inactive chapter dash */
-  --line-3: 221 213 195; /* #DDD5C3  nav hairline, placeholder surface */
-  --faint: 217 210 191; /* #D9D2BF  oversized index numerals (01/02/03) */
-  --skel: 236 231 219; /* #ECE7DB  refactor-skeleton ground shown between projects */
-
-  /* Notebook ruling */
-  --hatch-rule: 204 213 230; /* #CCD5E6  the blue horizontal rules */
-
-  /* On the blue flood (contact) */
-  --paper-on-blue: 242 239 233; /* #F2EFE9  paper-tone text on blue */
-  --muted-on-blue: 185 200 245; /* #B9C8F5  muted text on blue */
+     Warm graph-paper palette — a single light theme, no dark mode. */
+  --paper: 251 250 246; /* #FBFAF6  the notebook page — fills the whole viewport */
+  --ink: 38 36 31; /* #26241F  all strokes + primary text */
+  --ink-soft: 87 84 75; /* #57544B  secondary text (work-history lines) */
+  --link: 47 111 106; /* #2F6F6A  links */
+  --link-hover: 31 79 75; /* #1F4F4B  link hover */
+  --grid: 223 231 240; /* #DFE7F0  the school-blue graph-paper rules */
 }
 
 @layer base {
   html {
     @apply bg-paper;
-    overflow-x: hidden;
-    /* Reserve the scrollbar gutter from first paint so the viewport width never changes when
-       the tall film mounts and the scrollbar appears — otherwise the center-relative margin
-       rule shifts a few pixels on load. */
-    scrollbar-gutter: stable;
+    /* The site never scrolls sideways; the tall track is vertical only. */
+    overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
     color-scheme: light;
   }
 
   body {
-    @apply text-ink font-display antialiased;
+    @apply text-ink font-hand antialiased;
     margin: 0;
-    overscroll-behavior-x: none;
   }
 
   a {
-    @apply text-brand;
+    color: rgb(var(--link));
     text-decoration: none;
+    /* Links never wrap mid-word inside a wrapping caption. */
+    white-space: nowrap;
   }
 
   a:hover {
-    @apply text-brand-dark;
+    color: rgb(var(--link-hover));
   }
 
   ::selection {
-    background: rgb(var(--brand) / 0.22);
+    background: rgb(var(--link) / 0.18);
     color: rgb(var(--ink));
   }
 
   *:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgb(var(--brand) / 0.55);
+    box-shadow: 0 0 0 2px rgb(var(--link) / 0.55);
     border-radius: 2px;
   }
 }
 
 @layer components {
-  /* Ruled-notebook ground: evenly spaced blue horizontal rules. Keep the rule period a MULTIPLE
-     OF 4 (36px) so period × devicePixelRatio stays a whole number of device pixels across the
-     common display-scaling ratios (1, 1.25, 1.5, 1.75, 2, 3); then every line lands on the same
-     device sub-pixel and renders at a uniform thickness. A period that isn't (odd or fractional)
-     alternates crisp/soft lines — worst on scaled ultrawide monitors. */
-  .hatch-ground {
-    background-image: repeating-linear-gradient(to bottom, transparent 0 34.5px, rgb(var(--hatch-rule)) 34.5px 36px);
+  /* School-blue graph paper: 1px rules every 28px on both axes over warm paper. */
+  .graph-paper {
+    background-color: rgb(var(--paper));
+    background-image:
+      linear-gradient(rgb(var(--grid)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--grid)) 1px, transparent 1px);
+    background-size: 28px 28px;
   }
 
-  /* Mobile ruling: same blue rules on a tighter row rhythm, with a multiple-of-4 period (28px)
-     for uniform line thickness across device pixel ratios (see above). */
-  .hatch-ground-mobile {
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0 26.5px,
-      rgb(var(--hatch-rule)) 26.5px 28px
-    );
-  }
-
-  /* Hand-drawn wobble: an asymmetric border-radius that reads as a sketched box. */
-  .wobble-sm {
-    border-radius: 10px 4px 12px 5px / 5px 12px 4px 10px;
-  }
-
-  .wobble-md {
-    border-radius: 14px 6px 16px 8px / 8px 16px 6px 14px;
-  }
-
-  .wobble-lg {
-    border-radius: 16px 7px 18px 8px / 8px 18px 7px 16px;
-  }
-}
-
-/* Hero words rise on first paint; scrubbed scenes take over from scroll thereafter. */
-@keyframes ww-rise {
-  from {
-    opacity: 0;
-    transform: translateY(46px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  /* Caption band. Base layout only; the engine sets `top`/`left`/`width`/`clip-path` per frame
+     (drawing-band-relative on portrait/desktop, a right column in phone landscape). Starts
+     fully clipped so nothing flashes before the first paint. */
+  [data-ann] {
+    position: absolute;
+    top: 60vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(94vw, 900px);
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: clamp(10px, 2vw, 20px);
+    flex-wrap: wrap;
+    text-align: center;
+    font-size: clamp(15px, 2.2vw, 19px);
+    line-height: 1.7;
+    color: rgb(var(--ink));
+    padding-bottom: 0.45em;
+    clip-path: inset(0 100% 0 0);
   }
 }
 
-/* The scroll cue's gentle bob. */
-@keyframes ww-cue-bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(8px);
-  }
-}
-
-.animate-rise {
-  animation: ww-rise 0.7s cubic-bezier(0.2, 0.7, 0.25, 1) both;
-}
-
-.animate-cue-bounce {
-  animation: ww-cue-bounce 2s ease-in-out 1.6s infinite;
-}
-
-/* Respect reduced-motion: kill the decorative keyframes. The scroll-scrubbed film stays
-   (it is user-driven, not autonomous), but the engine additionally disables the timed intro
-   auto-draw and progress smoothing when this is set. */
+/* Reduced motion: the engine already drops the boil and progress easing; also clamp the
+   hint's opacity transition so nothing eases on its own. The scroll-scrubbed drawing stays —
+   it is user-driven, not autonomous. */
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise,
-  .animate-cue-bounce {
-    animation: none !important;
-  }
-
   * {
-    transition-duration: 100ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

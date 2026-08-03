@@ -2,50 +2,48 @@
 
 ## What This Is
 
-wilsonwu.io is Wilson Wu's personal portfolio: a single-page, fully static, frontend-only site with a hand-drawn "notebook" identity (warm paper, ruled lines, sketched wobble-boxes, two handwriting fonts, one blue accent) — deliberately distinct from the Krawly / Tallies / Rampr house style. Its signature is **one continuous travelling line** that threads every scene: it underlines the hero "WU", hooks through the About emphasis, traces each Projects frame, *becomes* the Experience career chart, and finishes as the Contact email underline. There is no backend — contact is `mailto:` + clipboard copy, and the résumé is a static PDF.
+wilsonwu.io is Wilson Wu's personal portfolio: a single-page, fully static, frontend-only site that plays like a short animated story on **graph paper**. One hand-drawn doodle at a time morphs into the next as the user scrolls, telling an arc in seven stages — **hello → krawly → tallies → rampr → work → coffee → mail** — with a minimal one-line caption under each drawing. There is no backend, no nav, no buttons, no footer: scroll is the only interaction, contact is a `mailto:` link, and every drawing is generated SVG (no images, no icon fonts). One handwriting font (Gloria Hallelujah), warm paper, school-blue grid, ink strokes, one teal accent for links.
 
-The site ships **two independent implementations**, chosen at runtime by viewport size — mobile when the viewport is `≤ 820px` wide *or* too short for the pinned film (chiefly phones in landscape, which clear the width breakpoint):
-
-- **Desktop — a pinned scroll film.** A tall track (`1500vh`, `FILM_LENGTH_VH` — the single knob for overall pace) with a `position: sticky` stage. A single `requestAnimationFrame` loop (`useFilmEngine`) maps scroll position to a smoothed progress value `p ∈ [0,1]` and positions all five scenes (Hero → About → Projects → Experience → Contact), the flood, and the line as pure functions of `p`. Elements are located by a `data-fx` marker so scenes can live in separate components while one engine drives them.
-- **Mobile — a flowing document.** Normal vertical scroll; blocks reveal on entry via `IntersectionObserver` (`useIntersectionReveal`), and a margin line scrubs alongside the reader (`useMobileFilm`). A hamburger opens a full-screen menu takeover.
+The whole thing is **one implementation** driven by a single `requestAnimationFrame` loop — the responsive behavior (portrait, landscape, desktop, ultrawide) is handled inside the engine's per-frame layout math, not by separate component trees.
 
 ## Architecture
 
-- **React 18 + Vite + TypeScript (strict).** Tailwind CSS v3 with semantic tokens mapped from CSS custom properties. No routing (one page; nav jumps scroll to a scene). No state library — a little `useState` for the mobile menu and the copy button; everything animated is driven imperatively by the engines, not React state.
-- **The engines** (`hooks/useFilmEngine.ts`, `hooks/useMobileFilm.ts`) own the `requestAnimationFrame` loops. They read scroll, compute progress, and assign inline styles to `data-fx` elements every frame. Scene reveals key off named scroll windows in `constants/animations.ts` (`FILM`); the line's drawing window is scrubbed piecewise across those same windows.
-- **The line** (`lib/snake.ts`) is pure geometry: it measures the live layout (anchor boxes) and emits an SVG path `d` plus the cumulative segment lengths the engine scrubs a dash-window across. Rebuilt on resize, font load, and when the Projects media frame shifts.
-- **Content** (`constants/content.ts`) is the single source for projects, experience, socials, and nav — both layouts render from it. Copy that differs between layouts is stored as explicit fields (`blurb` / `blurbShort`, `tags` / `tagsShort`).
+- **React 18 + Vite + TypeScript (strict).** Tailwind CSS v3 with semantic tokens mapped from CSS custom properties. No routing (one page). No state library — the only React state is the reduced-motion boolean (from `useMediaQuery`); everything animated is driven imperatively by the engine.
+- **The page is empty space.** The document body holds a tall empty scroll track (`800vh`, `SCROLL_LENGTH_VH`) and a `position: fixed`, full-viewport graph-paper **stage**. The stage holds one SVG (`viewBox="0 0 1600 900"`, `preserveAspectRatio="xMidYMid slice"`) with **18 stroke `<path>`s** plus the rampr axis labels, the seven caption divs, and the scroll hint.
+- **The engine** (`hooks/useNotebookFilm.ts`) owns the `requestAnimationFrame` loop. It reads `scrollY`, computes a smoothed progress `p ∈ [0,1]`, and every frame: morphs each stroke from the current stage to the next, adds "boil" (idle wobble), lays out the drawing/caption bands, transforms the SVG group to centre the doodle, and wipes the captions in. It locates elements by `data-*` markers within the stage, so the SVG, captions, and hint can live in separate components.
+- **The data model** (`lib/doodle.ts`, `constants/stages.ts`, `types/doodle.ts`). A stage is `NS = 18` strokes; a stroke is `NP = 12` points. Stroke constructors (`seg`, `circle`, `ell`, `poly`, `collapse`) build the geometry; `STAGES` is the seven finished doodles and `ANCHORS` their hand-tuned visual centres. Adjacent stages morph stroke-for-stroke, so a stroke *slot* holds the "same" line across stages (slot 5 is always the tie) and unused slots park at a collapse point.
+- **Copy** (`constants/content.ts`) holds the project/contact links and work-history lines; the caption text is JSX in `components/Captions.tsx`. Timing lives in `constants/animations.ts`.
 - **Deploy:** static Vite build → GitHub Pages (`gh-pages -d dist`) on the `wu-wilson.github.io` repo, custom domain `wilsonwu.io` via `public/CNAME`, DNS on Cloudflare. No CI, no Docker, no server.
 
 ## Key Decisions
 
-- **Two implementations, not one responsive tree.** The pinned film and the flowing document are different enough — different DOM, different motion model — that a single responsive component would be worse than two focused ones. `App` renders exactly one, chosen by a `matchMedia` query: the mobile document when the viewport is at or below the engine's `820px` width boundary, or shorter than the film needs (`FILM_MIN_HEIGHT`).
-- **Imperative animation by design.** Porting a pixel-and-motion-exact scroll film to per-property React state would be slower and less faithful. The engines mutate `data-fx` elements directly inside the rAF loop; React owns structure and content, the engine owns motion. This is the one place inline `style` and direct DOM writes are the right tool.
-- **One line, measured from layout.** The travelling line is a single path rebuilt from real measured boxes (not hardcoded coordinates), so it stays correct across viewport sizes and font loads. It reads as continuous because both the drawing head and the erasing tail advance together — a moving dash-window, not a static draw.
-- **Tokens, even in the engine.** Colors the engine assigns are `rgb(var(--token))` strings, not hex — so the whole palette still lives in `index.css`. Inline `style` carries only layout, transforms, fluid sizes, and JS-derived values.
-- **Reduced motion is honored in JS, not just CSS.** The engines drop progress smoothing and the timed intro draw under `prefers-reduced-motion`; the scroll-scrubbed layout still works (it is user-driven, not autonomous).
-- **Graceful asset fallback.** Project screenshots and the résumé are drop-in files under `public/`. Missing a screenshot renders a labeled placeholder, never a broken image; the site runs on a fresh clone.
+- **One SVG, 7×18×12 numbers.** The entire visual is a fixed grid of strokes and points morphed by scroll — no per-shape components, no images. This makes the morph trivial (lerp point-by-point) and keeps the whole design in one typed data module. Coordinates are ported verbatim from the design prototype; they are the source of truth — retune geometry in `constants/stages.ts`, never re-derive it in the engine.
+- **Imperative animation by design.** Porting a pixel-and-motion-exact scroll morph to per-property React state would be slower and less faithful. The engine mutates the SVG paths and caption styles directly inside the rAF loop; React owns structure and content, the engine owns motion. This is the one place inline `style` and direct DOM writes are the right tool.
+- **Responsive lives in the engine, not in CSS breakpoints.** Each frame the engine derives two screen bands (drawing on top, caption below) from `innerWidth`/`innerHeight`, caps the drawing at 500px, and — for phone landscape (`vh < 480 && vw > vh`) — splits to drawing-left / caption-right. There are no media queries for layout; the math is resolution-independent.
+- **Tokens, even in the engine.** Colors the engine assigns (the tie/eye/coffee fills) are `rgb(var(--token) / a)` strings, not hex — so the whole palette still lives in `index.css`. Inline `style` carries only layout, transforms, and JS-derived values.
+- **Reduced motion is honored in JS, not just CSS.** The engine snaps progress (no easing) and skips the boil under `prefers-reduced-motion`; the scroll-scrubbed drawing still works (it is user-driven, not autonomous).
 
 ## Do NOT
 
-- Add a backend, database, auth, analytics, or any server-side anything — the site is static and frontend-only. Contact stays `mailto:` + clipboard.
-- Add an animation library (Framer Motion, GSAP, anime.js, Lenis) or a scroll library — all motion is hand-rolled `requestAnimationFrame` + CSS.
-- Add UI component or charting libraries — build from scratch with Tailwind and CSS/SVG.
+- Add a backend, database, auth, analytics, or any server-side anything — the site is static and frontend-only. Contact stays a `mailto:` link.
+- Add an animation library (Framer Motion, GSAP, anime.js, Lenis) or a scroll library — all motion is hand-rolled `requestAnimationFrame` + SVG + CSS.
+- Add UI, charting, or drawing libraries — every doodle is generated SVG built from the stroke constructors.
+- Add images or icon fonts — there are no assets; keep it that way.
 - Write test files or install testing libraries (TypeScript `strict` is the only linter).
 - Use `any`, `as` casts (unless genuinely unavoidable), or default exports.
 - Hardcode hex colors — use the semantic tokens from `index.css` / `tailwind.config.js`, including inside the engine (`rgb(var(--token))`). No dark mode, no theme toggle.
-- Restructure a scene's DOM nesting without re-checking the line: the geometry walks `offsetParent` chains from `data-fx` anchors up to the stage, so moving an anchor's offset parent can break the path.
-- Rename or drop a `data-fx` marker without updating the engine — the engines find every animated element by that attribute.
-- Add dead code, unused exports, or speculative abstractions.
+- Re-derive or "clean up" the stroke coordinates, easing constants, or layout math — they are the prototype's verbatim values. Change them only to intentionally retune the design, in the data/constants modules.
+- Rename or drop a `data-*` marker (`data-s`, `data-ann`, `data-zoom`, `data-axes`, `data-hint`) without updating the engine — it finds every animated element by that attribute.
+- Change the stroke/point counts (`NP`, `NS`) or a stage's stroke *order* without updating every stage — morphing is slot-for-slot, so slot indices are a contract.
 
 ## Rules (path-scoped — loaded automatically when editing matching files)
 
 - `.claude/rules/code-style.md` — TypeScript, JSDoc, import ordering, naming, error handling. Loads for `src/**/*.{ts,tsx}`.
-- `.claude/rules/component-patterns.md` — React file structure, when state vs. the engine owns a value, the `data-fx` contract. Loads for `src/**/*.{ts,tsx}`.
-- `.claude/rules/styling.md` — Tokens, the notebook visual language, inline-style boundaries, animation. Loads for `src/**/*.{tsx,css}` and `tailwind.config.js`.
-- `.claude/rules/responsive.md` — The desktop/mobile split, viewport units, the centered rail, safe areas. Loads for `src/**/*.{tsx,css}`.
+- `.claude/rules/component-patterns.md` — React file structure, when the engine owns a value, the `data-*` contract. Loads for `src/**/*.{ts,tsx}`.
+- `.claude/rules/styling.md` — Tokens, the graph-paper visual language, inline-style boundaries, animation. Loads for `src/**/*.{tsx,css}` and `tailwind.config.js`.
+- `.claude/rules/responsive.md` — The single-engine layout system: the two bands, the landscape split, the 500px cap, safe areas. Loads for `src/**/*.{tsx,css}`.
 
 ## Skills (reference knowledge)
 
-- `.claude/skills/design-tokens/` — Exact color tokens, the two fonts, the ruled ground, wobble radii, and animation timing.
-- `.claude/skills/scroll-film/` — How the desktop engine, the scene windows, and the travelling line fit together; the `data-fx` catalog and the line's scrub schedule.
+- `.claude/skills/design-tokens/` — Exact color tokens, the font, the graph-paper grid, and animation timing.
+- `.claude/skills/doodle-engine/` — How the rAF engine, the stage/stroke data model, the morph/boil/dwell, and the responsive layout fit together; the `data-*` catalog and the stroke-slot map.

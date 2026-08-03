@@ -15,21 +15,25 @@ paths:
 
 ## State vs. the engine
 
-- **The engine owns motion.** Anything that changes with scroll (opacity, transform, visibility, the line, colors that track the active scene) is written imperatively by `useFilmEngine` / `useMobileFilm` every frame — never React state. Components render the element once, with its *rest / initial* inline style, and tag it with `data-fx`; the engine takes over from there.
-- **React owns structure, content, and discrete UI state.** Use `useState` only for genuinely discrete interactions: the mobile menu open/closed, and the copy-button "copied" label. Keep such state in the smallest component possible (e.g. `CopyButton` owns its own `copied`) so toggling it never re-renders — and never re-inits the rest styles of — an engine-driven scene.
-- No shared state store, no prop-drilling of animation values. The engines read the DOM, not props.
+- **The engine owns motion.** Everything that changes with scroll — each stroke's `d`, opacity, and fill; the SVG group transform; the caption clip/position; the hint's opacity/position; the axis labels' opacity — is written imperatively by `useNotebookFilm` every frame, never React state. Components render the elements once (paths empty, captions clipped) and tag them with `data-*`; the engine takes over.
+- **React owns structure and content.** The only React state is the reduced-motion boolean (`useMediaQuery` in `App`); no component holds animation state. If a genuinely discrete UI interaction is ever added, keep its state in the smallest component possible so toggling it never re-renders the engine-driven stage.
+- No shared state store, no prop-drilling of animation values. The engine reads the DOM (and the `STAGES` data), not props.
 
-## The `data-fx` contract
+## The `data-*` contract
 
-- Every animated element carries `data-fx="{key}"`. The engines locate elements by this attribute within a root (`track` on desktop, `mWrap` on mobile), so scenes can be separate components.
-- Keys are the contract between markup and engine. If you add, rename, or remove a `data-fx`, update the corresponding engine section. The line's anchors (`heroUnder`, `aboutU`, `pmedia`, `chartBox`, `cu` on desktop; `mU0`, `mU1`, `mF1..3`, `mX0..4`, `mContact` on mobile) additionally feed `lib/snake.ts`.
-- Preserve DOM nesting when refactoring a scene: the line measures boxes by walking `offsetParent` chains up to the stage, so changing an anchor's offset parent moves the line.
+- Every animated element carries a `data-*` marker; the engine locates them by attribute within the fixed stage root, so the SVG, captions, and hint can be separate components:
+  - `data-s="0".."17"` — the 18 stroke paths (engine sets `d`, opacity, fill). Order **is** the contract: morphing is slot-for-slot across stages, so `data-s` index must equal the stroke's index in every `STAGES` entry.
+  - `data-zoom` — the group the engine transforms to place/scale the drawing (also carries the paths' `stroke-width`).
+  - `data-axes` — the rampr `time`/`hiring` labels group (engine sets opacity).
+  - `data-ann="0".."6"` — the seven captions (engine sets clip-path, pointer-events, position).
+  - `data-hint` — the scroll cue (engine sets opacity, top/bottom).
+- If you add, rename, or remove a `data-*`, update the corresponding section of `useNotebookFilm`. Keep the SVG paths in document order 0→17 so `querySelectorAll('[data-s]')` indexes line up with `STAGES`.
 
-## Content
+## Content & data
 
-- Projects, experience, socials, and nav come from `constants/content.ts`; both layouts render from it. Store layout-specific copy as explicit fields (`blurb` / `blurbShort`, `tags` / `tagsShort`) rather than truncating at render.
-- Derive display strings in the component (e.g. the `NN/0N` chapter label, a mobile status line) — don't add redundant fields for what a line of code can compute.
+- The seven doodles live in `constants/stages.ts` (`STAGES`, `ANCHORS`), built from the constructors in `lib/doodle.ts`; the point/stroke/stage types are in `types/doodle.ts`. These coordinates are the design's verbatim source of truth — edit doodles here, not in the engine.
+- Caption copy is JSX in `components/Captions.tsx`; the repeated bits (project/contact links, work-history lines) come from `constants/content.ts`. Timing constants live in `constants/animations.ts`.
 
 ## Limits
 
-- Components stay small and single-purpose; extract a sub-component (e.g. `ProjectText`, `ProjectMedia`) rather than growing one past readability. The engines are the deliberate exception — they are one cohesive module each, documented section by section.
+- Components stay small and single-purpose (`DoodleStage`, `Captions`, `ScrollHint`, `Notebook`). The engine is the deliberate exception — one cohesive module, documented section by section. Don't split it or lift its per-frame work into React.

@@ -6,24 +6,27 @@ paths:
 
 # Responsive Design
 
-## The split
+One implementation, made responsive by the engine's per-frame layout math — not by media queries or separate component trees. `useNotebookFilm` re-derives the layout every frame from `window.innerWidth`/`innerHeight`, so it adapts continuously as the viewport changes.
 
-- Two independent implementations, chosen at runtime, not one fluid tree. `App` reads `matchMedia('(max-width: 820px), (max-height: FILM_MIN_HEIGHT)')`: it renders `MobileFilm` when the viewport is at or below `820px` wide *or* too short for the pinned film (the height term catches phones in landscape, which clear the width breakpoint); otherwise `DesktopFilm`. The width boundary is shared with the engines — keep `MOBILE_MAX_WIDTH`, the `App` query's width term, and the Tailwind `md` screen (`821px`) in agreement.
-- **Desktop** is a pinned film: a `1500vh` track (`FILM_LENGTH_VH`) under a `position: sticky; height: 100vh` stage. Here `100vh` is intentional and correct — the scroll math maps `window.innerHeight` to the sticky stage, so `dvh` would desync it. Do not "fix" it to `dvh`.
-- **Mobile** is a normal flowing document; blocks reveal on entry. Use the dynamic viewport (`svh` / `dvh`), never `100vh` — the hero is `100svh`.
+## The layout system (`paint()` in `hooks/useNotebookFilm.ts`)
 
-## Layout
+- **Two screen bands per viewport** — drawing on top, caption below — so the caption top sits at the same height for every stage. The drawing's interpolated anchor is pinned to the drawing band's centre via the `data-zoom` group transform.
+- `kSlice = max(vw/1600, vh/900)` is the SVG slice scale; `s = D / (500 · kSlice)` the group scale.
+- **Caption band height** `capH` is the measured tallest caption `offsetHeight` (min 60), re-measured when the viewport size changes and after `document.fonts.ready`.
+- **Drawing size** `D = max(120, min(0.65·min(vw,vh), 500, vh − 44 − CAP_GAP − capH))` — a **500px hard cap** keeps the doodle from ballooning on desktop/ultrawide, and the `vh − …` term shrinks it to fit shorter viewports.
+- **Phone landscape** (`vh < 480 && vw > vh`): the drawing centres at 30% of width and the captions move to a right column (`left: 56%`, `width: 40vw`, vertically centred); `capH` is not subtracted, and the scroll hint pins to the bottom.
 
-- Desktop scenes center content in a `min(1280px, 92vw)` (or `90vw`) rail with a `64px` left inset; the ruled ground fills the viewport behind it.
-- Mobile uses a `24px` (occasionally `20px`) gutter and stacks everything in one column; projects and experience become vertical cards/entries.
-- Fluid type via `min(px, vw)` so headlines scale with the viewport without media queries.
+## Targets
+
+Verify all four render cleanly: **mobile portrait** (e.g. 390×844), **phone landscape** (844×390 — the `vh < 480` branch), **desktop** (1920×1080), and **ultrawide** (3440×1440 — the 500px cap holds). No layout should need a CSS breakpoint.
 
 ## Viewport & safe areas
 
-- `index.html` sets `viewport-fit=cover`; the paper surface fills notch/home-indicator insets.
-- `html { overflow-x: hidden }` and `body { overscroll-behavior-x: none }` — never allow horizontal overflow; the pinned stage is `overflow: hidden`.
-- `html { scrollbar-gutter: stable }` reserves the scrollbar space from first paint, so the viewport width (and the center-relative desktop margin) doesn't shift when the tall film mounts and the scrollbar appears.
+- `index.html` sets `viewport-fit=cover`; the paper stage fills notch/home-indicator insets.
+- The engine's scroll math maps `window.innerHeight`, and the stage is `position: fixed; inset: 0` — so the drawing tracks the visual viewport as mobile browser chrome shows/hides. Do not swap the math to a fixed `vh`.
+- `html { overflow-x: clip }` — the site only ever scrolls vertically; never allow horizontal overflow.
 
 ## States
 
-- Every surface has designed content — no blank frames. A missing project screenshot renders a labeled placeholder (`Screenshot`), never a broken image. The mobile menu is a designed full-screen takeover, not a dropdown.
+- Every surface has designed content — no blank frames. There are no images to fail, no empty states: the whole page is generated SVG plus captions, always present.
+- Captions start fully clipped (`clip-path: inset(0 100% 0 0)`) so nothing flashes before the first paint; the engine wipes each in as its stage arrives.
