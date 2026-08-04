@@ -1,6 +1,12 @@
 import type { Point, Stroke } from '../types/doodle';
 
-/** Points per stroke. Every stroke — line, circle, arc, or parked point — has exactly this many. */
+/**
+ * The stroke constructors the seven doodles are drawn with, the two counts that fix the
+ * stroke-and-point grid every stage shares, and the geometry and easing helpers the engine
+ * paints with. Every function here is pure — no DOM, no state, no time.
+ */
+
+/** Points per stroke. Every stroke — line, ellipse, polyline, or parked point — has exactly this many. */
 export const NP = 12;
 
 /** Strokes per stage. Stages morph stroke-for-stroke, so all stages share this count. */
@@ -21,21 +27,8 @@ export const seg = (x1: number, y1: number, x2: number, y2: number): Stroke =>
   ]);
 
 /**
- * A full circle sampled into `NP` points starting at angle `a0` (degrees, clockwise from +x).
- * @param cx - Centre x
- * @param cy - Centre y
- * @param r - Radius
- * @param a0 - Start angle in degrees (default -90, i.e. top)
- * @returns The stroke's `NP` points
- */
-export const circle = (cx: number, cy: number, r: number, a0 = -90): Stroke =>
-  Array.from({ length: NP }, (_, i): Point => {
-    const a = ((a0 + (360 * i) / (NP - 1)) * Math.PI) / 180;
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-  });
-
-/**
- * An ellipse sampled into `NP` points (used for the small filled eye ovals).
+ * An ellipse sampled into `NP` points, starting at the top and going clockwise (used for the
+ * small filled eye ovals, and for every circle).
  * @param cx - Centre x
  * @param cy - Centre y
  * @param rx - Horizontal radius
@@ -48,7 +41,21 @@ export const ell = (cx: number, cy: number, rx: number, ry: number): Stroke =>
     return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)];
   });
 
-/** All `NP` points parked at one spot — an "unused" stroke that a doodle grows from or collapses to. */
+/**
+ * A full circle sampled into `NP` points — an {@link ell} with equal radii.
+ * @param cx - Centre x
+ * @param cy - Centre y
+ * @param r - Radius
+ * @returns The stroke's `NP` points
+ */
+export const circle = (cx: number, cy: number, r: number): Stroke => ell(cx, cy, r, r);
+
+/**
+ * All `NP` points parked at one spot — an "unused" stroke that a doodle grows from or collapses to.
+ * @param x - The park point's x
+ * @param y - The park point's y
+ * @returns The stroke's `NP` points, all identical
+ */
 export const collapse = (x: number, y: number): Stroke =>
   Array.from({ length: NP }, (): Point => [x, y]);
 
@@ -85,6 +92,26 @@ export const poly = (...pts: Point[]): Stroke => {
 };
 
 /**
+ * A stroke's bounding-box extent — its width plus its height — used to tell "real" strokes from
+ * ones parked at (or pinched down to) a point.
+ * @param pts - Any list of points in world coords
+ * @returns Width + height of the bounding box, in world px
+ */
+export const extent = (pts: Point[]): number => {
+  let x0 = Infinity;
+  let x1 = -Infinity;
+  let y0 = Infinity;
+  let y1 = -Infinity;
+  for (const [x, y] of pts) {
+    if (x < x0) x0 = x;
+    if (x > x1) x1 = x;
+    if (y < y0) y0 = y;
+    if (y > y1) y1 = y;
+  }
+  return x1 - x0 + (y1 - y0);
+};
+
+/**
  * Clamp a value to the `0..1` range.
  * @param t - Any number
  * @returns `t` clamped to `[0, 1]`
@@ -92,7 +119,7 @@ export const poly = (...pts: Point[]): Stroke => {
 export const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 
 /**
- * Smoothstep easing on `0..1` — the S-curve used for dwell and every reveal window.
+ * Smoothstep easing on `0..1` — the S-curve that shapes each stage's dwell.
  * @param t - Input, clamped to `[0, 1]`
  * @returns The eased value in `[0, 1]`
  */

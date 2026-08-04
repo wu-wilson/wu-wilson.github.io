@@ -2,6 +2,7 @@ import { useRef, type FC } from 'react';
 
 import { Captions } from './Captions';
 import { DoodleStage } from './DoodleStage';
+import { ResumeLink } from './ResumeLink';
 import { ScrollHint } from './ScrollHint';
 
 import { useNotebookFilm } from '../hooks/useNotebookFilm';
@@ -16,8 +17,8 @@ interface NotebookProps {
 
 /**
  * The whole site: a tall empty scroll track drives a fixed, full-viewport graph-paper stage
- * that holds the doodle SVG, the captions, and the scroll hint. The rAF engine reads scroll
- * and paints every frame; React only renders this structure once.
+ * holding the doodle SVG, the captions, the scroll hint, and the resume link. React renders this
+ * structure once; the rAF engine reads scroll and paints every frame after that.
  * @param reducedMotion - Forwarded to the engine to drop easing and the boil
  * @returns The notebook experience
  */
@@ -26,7 +27,7 @@ export const Notebook: FC<NotebookProps> = ({ reducedMotion }) => {
   useNotebookFilm(stageRef, reducedMotion);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <>
       {/* Empty scroll track — its length sets the pace of the whole story. */}
       <div style={{ height: `${SCROLL_LENGTH_VH}vh` }} />
 
@@ -38,7 +39,9 @@ export const Notebook: FC<NotebookProps> = ({ reducedMotion }) => {
         <DoodleStage />
         <Captions />
         <ScrollHint />
+        {/* Last so the one clickable fixture paints above the engine-driven layers. */}
+        <ResumeLink />
       </div>
-    </div>
+    </>
   );
 };

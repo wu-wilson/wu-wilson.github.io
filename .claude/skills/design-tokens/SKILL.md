@@ -1,6 +1,6 @@
 ---
 name: design-tokens
-description: wilsonwu.io's exact color tokens, font, the graph-paper grid, and animation timing. Read before writing any styling.
+description: wilsonwu.io's exact color tokens, font, type scale, the graph-paper grid, and animation timing. Read before writing any styling.
 ---
 
 # wilsonwu.io design tokens
@@ -28,6 +28,14 @@ Stored as **space-separated RGB channels** on `:root` in `src/index.css` (hex in
 
 - **Gloria Hallelujah** — the only family, the `body` default (`font-hand`). All text — captions, links, axis labels, the scroll cue — uses it. Loaded via the Google Fonts `@import` at the top of `index.css`.
 
+## Type scale
+
+Fluid `clamp()`s in `index.css` — there are no breakpoints, so these are the whole scale:
+
+- **Captions** (`[data-ann]`): `clamp(15px, min(2.2vw, 3.5vh), 19px)`. The `3.5vh` term is deliberate — a width-only scale inflated captions when a phone rotated. Rationale in `.claude/rules/responsive.md`.
+- **Resume link** (`.resume-link`): `clamp(13px, 1.15vw, 17px)` — subordinate to the captions at every size.
+- **Scroll hint**: a flat `14px`. Work-history sub-lines are `0.85em` of the caption.
+
 ## Graph paper
 
 - `.graph-paper` paints the fixed stage: two 1px `--grid` linear-gradients over `--paper`, `background-size: 28px 28px` — a school-blue grid on both axes.
@@ -40,6 +48,6 @@ Stored as **space-separated RGB channels** on `:root` in `src/index.css` (hex in
 
 ## Animation timing
 
-- `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `STROKE_WIDTH` (2.6), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02).
+- `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `REVEAL_HALF`/`REVEAL_RAMP` (0.55 / 3.2, the reveal-window shape behind every caption wipe and fill), `STROKE_WIDTH` (2.6), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02).
 - Geometry counts live in `lib/doodle.ts`: `NP` (12 points/stroke), `NS` (18 strokes/stage).
 - There are no CSS keyframes — the only CSS transition is the scroll hint's `opacity`. `prefers-reduced-motion`: `index.css` clamps transition durations; the engine snaps progress and skips the boil.

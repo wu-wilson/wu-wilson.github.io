@@ -1,6 +1,7 @@
 /**
- * Timing and motion constants for the doodle film. Every value here is the prototype's
- * verbatim — port, don't re-derive. Geometry counts (`NP`, `NS`) live in `lib/doodle.ts`.
+ * Timing, motion, and band-layout constants for the doodle film. Every value here is the
+ * prototype's verbatim — port, don't re-derive. Geometry counts (`NP`, `NS`) live in
+ * `lib/doodle.ts`.
  */
 
 /** Total scroll length of the story, in viewport heights. Longer = slower morphs per scene. */
@@ -24,6 +25,15 @@ export const DWELL_HOLD = 0.3;
 
 /** The middle fraction of each stage segment over which the morph actually happens. */
 export const DWELL_MORPH = 0.4;
+
+/**
+ * Half-width, in stage units, of a stage's reveal window — the shape that wipes captions in and
+ * switches fills on. A window is centred on its stage and reaches `REVEAL_HALF` to either side.
+ */
+export const REVEAL_HALF = 0.55;
+
+/** How steeply a reveal window ramps in and out; higher = snappier edges, `1/RAMP` stages wide. */
+export const REVEAL_RAMP = 3.2;
 
 /** Pen stroke width in world units (SVG `stroke-width`). */
 export const STROKE_WIDTH = 2.6;

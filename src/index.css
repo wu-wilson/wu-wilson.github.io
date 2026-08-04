@@ -63,6 +63,31 @@
     background-size: 28px 28px;
   }
 
+  /* The persistent resume link — a scribble in the page's top margin, and the one fixture on the
+     stage the engine never touches. Absolute inside the fixed stage, so it is viewport-pinned
+     without a second fixed element. Insets and type size are fluid so it breathes on ultrawide
+     and tucks in on a phone; `env()` clears notch/rounded-corner insets, which are real here
+     because `index.html` sets `viewport-fit=cover`. */
+  .resume-link {
+    position: absolute;
+    top: max(clamp(14px, 2.2vh, 28px), env(safe-area-inset-top));
+    right: max(clamp(16px, 2.2vw, 40px), env(safe-area-inset-right));
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    font-size: clamp(13px, 1.15vw, 17px);
+    line-height: 1;
+  }
+
+  /* Hand-drawn underline: shrink-wrapped to the word, sized in `em` so it tracks the type size. */
+  .resume-link svg {
+    display: block;
+    width: 100%;
+    height: 0.34em;
+    margin-top: 0.16em;
+    overflow: visible;
+  }
+
   /* Caption band. Base layout only; the engine sets `top`/`left`/`width`/`clip-path` per frame
      (drawing-band-relative on portrait/desktop, a right column in phone landscape). Starts
      fully clipped so nothing flashes before the first paint. */
@@ -78,7 +103,11 @@
     gap: clamp(10px, 2vw, 20px);
     flex-wrap: wrap;
     text-align: center;
-    font-size: clamp(15px, 2.2vw, 19px);
+    /* Height-aware type scale. `2.2vw` alone keys off width only, so rotating a phone inflated
+       captions from 15px to ~18.6px on the same physical screen; the `3.5vh` term holds every
+       phone — either orientation — at the 15px floor while leaving desktop and ultrawide at 19px
+       (there, `vh` is large enough that `2.2vw` still wins). */
+    font-size: clamp(15px, min(2.2vw, 3.5vh), 19px);
     line-height: 1.7;
     color: rgb(var(--ink));
     padding-bottom: 0.45em;

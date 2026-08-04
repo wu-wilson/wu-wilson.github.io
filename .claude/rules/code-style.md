@@ -9,7 +9,7 @@ paths:
 ## TypeScript
 
 - Strict mode enabled. No `any` — use `unknown` with narrowing. No `as` casts unless genuinely unavoidable (the engine's `querySelector<T>` generics and annotated map callbacks carry types instead). Prefer `interface` for object shapes, `type` for unions.
-- Functional components: `const` arrow functions typed via a `{ComponentName}Props` interface defined directly above the component.
+- Functional components: `const` arrow functions typed `FC`. Only components that take props declare a `{ComponentName}Props` interface, directly above the component — most here take none.
 - Named exports only — no default exports.
 
 ## Docstrings
@@ -23,21 +23,21 @@ paths:
 
 ## Imports
 
-- Group with blank lines: third-party → Components → Hooks → Lib/utils → Constants → Types (via `import type`).
+- Group with blank lines: third-party → Components → Hooks → Lib/utils → Constants → Types (via `import type`). A side-effect CSS import goes last, after every value import.
 - All imports relative (`../../constants/...`). No path aliases.
 - Alphabetical within groups.
 
 ## Naming
 
 - Event handlers: `handle{Event}` (or `on{Event}` for passed-in callbacks). Hooks: `use{Name}`. Booleans: `is`/`has`/`should`.
-- PascalCase component files (`Hero.tsx`); camelCase for hooks, lib, and util files (`snake.ts`, `easing.ts`).
-- SCREAMING_SNAKE_CASE module constants (`FILM_LENGTH_VH`, `PROGRESS_SMOOTHING`); PascalCase types.
+- PascalCase component files (`Notebook.tsx`); camelCase for hooks, lib, and util files (`useNotebookFilm.ts`, `doodle.ts`).
+- SCREAMING_SNAKE_CASE module constants (`SCROLL_LENGTH_VH`, `BOIL_AMP`); PascalCase types.
 - Animation markers use `data-*` attributes; keep them short and stable (`data-s`, `data-ann`, `data-zoom`, `data-axes`, `data-hint`).
 
 ## Patterns
 
 - Pure functions, early returns, no deep nesting. 2-space indent, semicolons always, single quotes in code / double in JSX.
-- Try/catch async operations meaningfully; `finally` for cleanup; no silent swallowing.
+- Try/catch async operations meaningfully; `finally` for cleanup; no silent swallowing. There is currently exactly one promise in `src/` — `document.fonts.ready` in the engine — and it is spec'd never to reject, so it deliberately has no `.catch`. Don't add an empty one; that would be the silent swallowing this rule forbids.
 - The engine's rAF loop must clean up on unmount — cancel the frame, remove listeners, clear the boil interval. Never leak a loop or a `resize` handler.
 - No dead code, unused imports, unused exports, or speculative abstractions.
 - No `console.log`. There is no operational logging surface here — the site is a static frontend.

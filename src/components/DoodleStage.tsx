@@ -8,11 +8,9 @@ import { STROKE_WIDTH } from '../constants/animations';
 const INK = 'rgb(var(--ink))';
 
 /**
- * The single SVG that holds the whole doodle. `data-zoom` is the group the engine transforms
- * to place and scale the drawing; it holds the `NS` stroke paths (found by `data-s`) whose `d`,
- * opacity, and fill the engine paints every frame, plus `data-axes` — the rampr chart labels,
- * faded in by the engine. The `1600×900` world is sliced to fill the viewport, but the engine
- * positions the drawing manually, so slicing never crops it.
+ * The single SVG that holds the whole doodle: the `NS` stroke paths (`data-s`) and the rampr axis
+ * labels (`data-axes`), inside the group the engine transforms to place and scale them
+ * (`data-zoom`). Paths render empty — the engine paints their `d`, opacity, and fill every frame.
  * @returns The doodle SVG
  */
 export const DoodleStage: FC = () => (

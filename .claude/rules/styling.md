@@ -7,13 +7,14 @@ paths:
 
 # Styling
 
-Warm graph-paper, hand-drawn doodle aesthetic — cream page, a school-blue grid, ink strokes, one handwriting font, one teal accent. No UI, animation, or drawing libraries; every doodle is generated SVG, and the rest is Tailwind + a little CSS.
+Warm graph-paper, hand-drawn doodle aesthetic — cream page, a school-blue grid, ink strokes, one handwriting font, one teal accent. No UI, animation, or drawing libraries; every doodle is generated SVG, and the rest is hand-written CSS over Tailwind's reset and design tokens.
 
 ## Theming
 
 - All colors via CSS custom properties / Tailwind semantic tokens. Never hardcode hex in components (no `bg-[#ABC]`), and never in the engine — it assigns token strings like `rgb(var(--ink))` (with alpha, `rgb(var(--ink) / 0.5)`).
 - **Light, single theme** — palette on `:root` in `index.css`. No `dark:` prefixes, no theme toggle.
 - Tokens are **space-separated RGB channels** (`--ink: 38 36 31;`, hex in a comment), consumed via `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js` so `text-ink/60` resolves. Direct SVG `fill`/`stroke` and engine assignments wrap as `rgb(var(--token))`.
+- **Tailwind only scans `className` values**, via a custom `extract` in `tailwind.config.js`. Its default extractor treats every word in a file as a possible class, and this project's vocabulary collides with utility names (`collapse` the stroke constructor, `onResize`, `position: 'absolute'`, the word "grid" in a docstring), which shipped a dozen utilities no markup used. Write classes as literal text inside `className` — a class assembled dynamically won't be generated.
 - The palette: paper `--paper` fills the viewport; `--ink` is every stroke and all primary text; `--ink-soft` is the dimmed work-history lines; links use `--link` / `--link-hover` (teal); the graph grid is `--grid` (school blue).
 
 ## Visual language
@@ -27,12 +28,13 @@ Warm graph-paper, hand-drawn doodle aesthetic — cream page, a school-blue grid
 
 - Links pair teal with a hover darken and living inside caption text; the only other color is the dimmed `--ink-soft` work-history lines, which are also set apart by size and position. Color only reinforces.
 
-## Inline style vs. Tailwind
+## Stylesheet vs. inline style
 
-- Use **Tailwind classes / base-layer CSS** for fonts, colors, links, focus rings, and the `.graph-paper` and `[data-ann]` rules.
-- Use **inline `style`** for what the engine drives and what Tailwind can't cleanly express: `position: fixed`/`absolute`, the SVG group `transform`, `clip-path`, fluid `min()`/`clamp()` sizes, and any JS-derived value. This is a deliberately inline-heavy port — a pixel-and-motion-exact scroll morph — and that is the sanctioned reason.
+- Use **CSS in `index.css`** for fonts, colors, links, focus rings, and the `.graph-paper`, `.resume-link`, and `[data-ann]` rules. Tailwind's whole contribution is its reset, the semantic color/font tokens, and four `@apply`ed utilities on `html`/`body` — no component uses a utility class.
+- Use **inline `style`** for what the engine drives and for one-off component layout: the fixed stage, the scroll track's height, the SVG group `transform`, `clip-path`, and any JS-derived value. This is a deliberately inline-heavy port — a pixel-and-motion-exact scroll morph — and that is the sanctioned reason.
+- **Anything needing a media query, a pseudo-class, or a fluid `clamp()` goes in `index.css`** — inline styles can't express them. That is why the resume link is a `.resume-link` class rather than a style object, and why the two fluid type scales live in CSS.
 
 ## Animation
 
-- All motion is hand-rolled `requestAnimationFrame` in `hooks/useNotebookFilm.ts`. There are no CSS keyframes — the only CSS transition is the scroll hint's `opacity`. Timing constants live in `constants/animations.ts` (`EASE`, `BOIL_MS`, `BOIL_AMP`, dwell, `SCROLL_LENGTH_VH`).
+- All motion is hand-rolled `requestAnimationFrame` in `hooks/useNotebookFilm.ts`. There are no CSS keyframes — the only CSS transition is the scroll hint's `opacity`. Timing constants live in `constants/animations.ts` (`EASE`, `BOIL_MS`, `BOIL_AMP`, dwell, reveal, `SCROLL_LENGTH_VH`).
 - Honor `prefers-reduced-motion`: `index.css` clamps transition durations, and the engine snaps progress (no easing) and skips the boil.

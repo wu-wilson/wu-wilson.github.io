@@ -6,7 +6,4 @@ import react from '@vitejs/plugin-react';
 // need a base override.
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 5173,
-  },
 });

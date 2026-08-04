@@ -17,10 +17,9 @@ const stackStyle: CSSProperties = {
 };
 
 /**
- * The seven one-line captions, one per stage, in scroll order. Each is tagged `data-ann={i}`;
- * the engine positions them under the drawing band and wipes them in left-to-right as their
- * stage arrives (see `useNotebookFilm`). Base layout/clip lives in the `[data-ann]` rule in
- * `index.css`. Links open in a new tab (except mailto) and inherit the teal link color.
+ * The seven one-line captions, one per stage, in scroll order and tagged `data-ann={i}` — the
+ * engine positions each under the drawing band and wipes it in as its stage arrives. Base
+ * layout and the starting clip live in the `[data-ann]` rule in `index.css`.
  * @returns The caption layer
  */
 export const Captions: FC = () => (

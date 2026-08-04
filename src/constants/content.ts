@@ -1,9 +1,10 @@
 /**
- * All copy and links for the seven captions, kept out of the JSX so the words are easy to edit.
- * Caption order matches `STAGES`. The prototype's exact wording is the source of truth.
+ * Every link and repeated line on the page, kept out of the JSX so the words are easy to edit.
+ * The caption sets below are in `STAGES` order; the prototype's exact wording is the source of
+ * truth. One-off caption sentences stay inline in `components/Captions.tsx`.
  */
 
-/** An external link rendered inside a caption (teal, no underline). */
+/** A labelled link rendered on the page — inside a caption, or the corner resume link. */
 interface CaptionLink {
   label: string;
   href: string;
@@ -17,7 +18,7 @@ export const PROJECTS = {
   krawly: { label: 'krawly', href: 'https://krawly.dev' },
   tallies: { label: 'tallies', href: 'https://tallies.dev' },
   rampr: { label: 'rampr', href: 'https://rampr.dev' },
-};
+} satisfies Record<string, CaptionLink>;
 
 /** Work-history lines shown, stacked and dimmed, under the "work" caption. Newest first. */
 export const WORK_HISTORY: string[] = [
@@ -34,3 +35,9 @@ export const CONTACT_LINKS: CaptionLink[] = [
   { label: 'github.com/wu-wilson', href: 'https://github.com/wu-wilson' },
   { label: 'linkedin.com/in/wils-wu', href: 'https://www.linkedin.com/in/wils-wu' },
 ];
+
+/**
+ * The resume PDF — the one link outside the story, pinned to the page corner. Served from
+ * `public/` so it ships with the static build; swap that file to update it.
+ */
+export const RESUME: CaptionLink = { label: 'resume', href: '/resume.pdf' };

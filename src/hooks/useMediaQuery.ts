@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Track whether a CSS media query currently matches, re-rendering on change. Used to swap the
- * pinned desktop film for the flowing mobile layout at the breakpoint, and to read the user's
- * reduced-motion preference.
- * @param query - A media query string (e.g. `(max-width: 820px)`)
+ * Track whether a CSS media query currently matches, re-rendering on change. The site's layout is
+ * resolution-independent, so this reads user preferences — not breakpoints.
+ * @param query - A media query string (e.g. `(prefers-reduced-motion: reduce)`)
  * @returns `true` while the query matches
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia(query).matches
-  );
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
 
   useEffect(() => {
     const list = window.matchMedia(query);

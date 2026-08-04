@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from 'react';
 
-import { clamp01, NP, NS, smoothstep, strokePath } from '../lib/doodle';
+import { clamp01, extent, NP, NS, smoothstep, strokePath } from '../lib/doodle';
 
 import {
   BOIL_AMP,
@@ -10,13 +10,26 @@ import {
   DWELL_MORPH,
   EASE,
   HINT_FADE,
+  REVEAL_HALF,
+  REVEAL_RAMP,
 } from '../constants/animations';
 import { ANCHORS, STAGES } from '../constants/stages';
 
 import type { Point } from '../types/doodle';
 
-/** Ink fill for the tie and eyes, at a given alpha; token-based so the palette stays in CSS. */
+/** Ink fill for the tie, eyes, and coffee surface; token-based so the palette stays in CSS. */
 const inkFill = (alpha: number): string => 'rgb(var(--ink) / ' + alpha.toFixed(3) + ')';
+
+/**
+ * The engine's one reveal shape: ramps up through the previous half-stage, holds while stage `i`
+ * is on screen, ramps back down through the next. Drives the caption wipes, the axis labels, and
+ * every fill.
+ * @param q - Timeline position in stage units (`progress × (STAGES.length - 1)`)
+ * @param i - Stage index the window is centred on
+ * @returns Reveal amount in `[0, 1]`
+ */
+const stageWindow = (q: number, i: number): number =>
+  clamp01((q - (i - REVEAL_HALF)) * REVEAL_RAMP) * clamp01((i + REVEAL_HALF - q) * REVEAL_RAMP);
 
 /** Fresh boil jitter: `NS × NP` random `[dx, dy]` offsets in world px, uniform in `[-AMP/2, +AMP/2]`. */
 const makeJitter = (): Point[][] =>
@@ -28,13 +41,11 @@ const makeJitter = (): Point[][] =>
   );
 
 /**
- * Drive the doodle film: one `requestAnimationFrame` loop maps scroll position to a smoothed
- * progress value and, as a pure function of it, morphs the current doodle into the next,
- * wobbles it at rest (boil), lays out the drawing/caption bands, and wipes captions in and out.
- * Elements are located by their `data-*` marker within the fixed stage, so the SVG, captions,
- * and hint can live in separate components. Honors reduced-motion by snapping progress (no
- * easing) and skipping the boil.
- * @param rootRef - Ref to the fixed stage element that contains the SVG, captions, and hint
+ * Drive the doodle film: one `requestAnimationFrame` loop turns scroll position into a smoothed
+ * progress value, then paints the whole frame as a pure function of it — morph, boil, band
+ * layout, and caption wipes. Animated elements are found by their `data-*` marker inside the
+ * stage, so they can live in separate components.
+ * @param rootRef - Ref to the fixed stage element holding the animated elements
  * @param reducedMotion - When `true`, snap to the scroll position and disable the idle wobble
  */
 export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: boolean): void {
@@ -53,7 +64,8 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
     let target = 0;
     let dirty = true;
     let measureKey: string | null = null;
-    let capH = 116;
+    // Always measured (below) before it is first read; 0 is just a placeholder.
+    let capH = 0;
     let jitter = makeJitter();
     let raf = 0;
 
@@ -106,7 +118,7 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       if (hint) {
         hint.style.opacity = p < HINT_FADE ? '1' : '0';
         if (landscape) {
-          hint.style.top = '';
+          hint.style.top = 'auto';
           hint.style.bottom = '12px';
         } else {
           hint.style.bottom = 'auto';
@@ -114,85 +126,68 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
         }
       }
 
+      const wHello = stageWindow(q, 0);
+      const wKrawly = stageWindow(q, 1);
+      const wWork = stageWindow(q, 4);
+      const wCoffee = stageWindow(q, 5);
+
       const A = STAGES[k];
       const B = STAGES[k + 1];
-      // The tie (strokes 5, 15) fills and renders sharp only while the work stage is on screen.
-      const w4 = clamp01((q - 3.45) * 3.2) * clamp01((4.55 - q) * 3.2);
       paths.forEach((path, si) => {
         const pa = A[si];
         const pb = B[si];
         const j = jitter[si];
 
-        // Source stroke extent → scale boil down for small features (eyes, dots).
-        let ax0 = 1e9;
-        let ax1 = -1e9;
-        let ay0 = 1e9;
-        let ay1 = -1e9;
-        pa.forEach((pt) => {
-          if (pt[0] < ax0) ax0 = pt[0];
-          if (pt[0] > ax1) ax1 = pt[0];
-          if (pt[1] < ay0) ay0 = pt[1];
-          if (pt[1] > ay1) ay1 = pt[1];
-        });
-        const jScale = Math.min(1, (ax1 - ax0 + (ay1 - ay0)) / 110);
+        // Source extent scales the boil down for small features (eyes, dots); comparing source to
+        // target detects strokes collapsing to — or growing from — a park point.
+        const extA = extent(pa);
+        const extB = extent(pb);
+        const jScale = Math.min(1, extA / 110);
 
-        let minx = 1e9;
-        let maxx = -1e9;
-        let miny = 1e9;
-        let maxy = -1e9;
         const pts = pa.map((pt, i): Point => {
           // Taper boil to zero at stroke endpoints so joints stay connected.
           const env = Math.sin((Math.PI * i) / (pa.length - 1));
-          const x = pt[0] + (pb[i][0] - pt[0]) * f + j[i][0] * jScale * env;
-          const y = pt[1] + (pb[i][1] - pt[1]) * f + j[i][1] * jScale * env;
-          if (x < minx) minx = x;
-          if (x > maxx) maxx = x;
-          if (y < miny) miny = y;
-          if (y > maxy) maxy = y;
-          return [x, y];
+          return [
+            pt[0] + (pb[i][0] - pt[0]) * f + j[i][0] * jScale * env,
+            pt[1] + (pb[i][1] - pt[1]) * f + j[i][1] * jScale * env,
+          ];
         });
 
-        // Target stroke extent → fade collapse-bound strokes instead of leaving a lingering dot.
-        let bx0 = 1e9;
-        let bx1 = -1e9;
-        let by0 = 1e9;
-        let by1 = -1e9;
-        pb.forEach((pt) => {
-          if (pt[0] < bx0) bx0 = pt[0];
-          if (pt[0] > bx1) bx1 = pt[0];
-          if (pt[1] < by0) by0 = pt[1];
-          if (pt[1] > by1) by1 = pt[1];
-        });
-        const extA = ax1 - ax0 + (ay1 - ay0);
-        const extB = bx1 - bx0 + (by1 - by0);
-        const ext = maxx - minx + (maxy - miny);
+        // Fade parked strokes instead of leaving a lingering dot on the page.
         let op = 1;
         if (extA < 6 && extB < 6) op = 0;
         else if (extB < 6) op = Math.max(0, 1 - f / 0.2);
         else if (extA < 6) op = clamp01((f - 0.8) / 0.2);
-        else if (ext < 2.5) op = Math.max(0, (ext - 0.5) / 2);
+        else {
+          // Mid-morph a stroke can still pinch down to almost nothing.
+          const ext = extent(pts);
+          if (ext < 2.5) op = Math.max(0, (ext - 0.5) / 2);
+        }
         path.style.opacity = String(op);
 
-        const sharp = (si === 5 || si === 15) && w4 > 0.5;
+        // The tie (slots 5, 15) fills and renders sharp only while the work stage is on screen.
+        const sharp = (si === 5 || si === 15) && wWork > 0.5;
         path.setAttribute('d', strokePath(pts, sharp));
 
         if (si === 5 || si === 15) {
-          path.style.fill = w4 > 0.01 ? inkFill(w4) : 'none';
+          path.style.fill = wWork > 0.01 ? inkFill(wWork) : 'none';
         } else if (si === 1 || si === 2 || si === 3) {
-          // Eyes fill as solid ovals during the stick-figure and spider stages.
-          const w0 = clamp01((0.55 - q) * 3.2);
-          const w1 = clamp01((q - 0.45) * 3.2) * clamp01((1.55 - q) * 3.2);
-          const w5 = clamp01((q - 4.45) * 3.2) * clamp01((5.55 - q) * 3.2);
-          const we = si === 1 ? Math.max(w0, w4) : si === 2 ? Math.max(w0, w4, w1, w5) : w1;
+          // Eyes fill as solid ovals during the stick-figure and spider stages; slot 2 does
+          // double duty, its coffee window filling the mug's surface.
+          const we =
+            si === 1
+              ? Math.max(wHello, wWork)
+              : si === 2
+                ? Math.max(wHello, wWork, wKrawly, wCoffee)
+                : wKrawly;
           path.style.fill = we > 0.01 ? inkFill(we) : 'none';
         }
       });
 
-      // Captions wipe in left-to-right over a window centred on their stage; the rampr axis
-      // labels share the tallies→rampr→work window via vis(3).
-      const vis = (i: number) => clamp01((q - (i - 0.55)) * 3.2) * clamp01((i + 0.55 - q) * 3.2);
+      // Captions wipe in left-to-right over their own stage's window; the rampr axis labels
+      // share the tallies→rampr→work window via stage 3's.
       anns.forEach((g, i) => {
-        const v = vis(i);
+        const v = stageWindow(q, i);
         g.style.clipPath = 'inset(0 ' + ((1 - v) * 100).toFixed(2) + '% 0 0)';
         g.style.pointerEvents = v > 0.9 ? 'auto' : 'none';
         if (landscape) {
@@ -209,7 +204,7 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
           g.style.bottom = 'auto';
         }
       });
-      if (axes) axes.setAttribute('opacity', vis(3).toFixed(3));
+      if (axes) axes.setAttribute('opacity', stageWindow(q, 3).toFixed(3));
     };
 
     const onScroll = () => {
@@ -232,12 +227,11 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
     onScroll();
-    if (document.fonts) {
-      document.fonts.ready.then(() => {
-        measureKey = null;
-        dirty = true;
-      });
-    }
+    // The caption band is measured in px, so re-measure once the handwriting font swaps in.
+    document.fonts.ready.then(() => {
+      measureKey = null;
+      dirty = true;
+    });
 
     const loop = () => {
       raf = requestAnimationFrame(loop);
