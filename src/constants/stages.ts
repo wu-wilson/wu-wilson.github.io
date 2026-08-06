@@ -1,15 +1,19 @@
+/**
+ * The seven finished doodles and their visual centres, built from the stroke constructors in
+ * `lib/doodle.ts`. Coordinates are the design prototype's verbatim — they are the single source
+ * of truth for the geometry; retune here, never in the engine.
+ */
+
 import { circle, collapse as C, ell, poly, seg } from '../lib/doodle';
 
 import type { Point, Stage } from '../types/doodle';
 
 /**
- * The seven finished doodles, each a set of `NS` strokes, in scroll order:
- * `0` curious stick figure with "?", `1` krawly spider, `2` tallies receipt, `3` rampr graph,
- * `4` stick figure in a tie with briefcase, `5` coffee, `6` mail. Adjacent stages morph
- * stroke-for-stroke, so slot `i` is one pen stroke's identity through the film, not a fixed
- * feature — slot 5 is an arm here, the tie body in stage 4, a steam squiggle in stage 5. Slots a
- * stage doesn't need park at a collapse point. Coordinates are the prototype's verbatim — they
- * are the single source of truth for the geometry; retune here, not in the engine.
+ * The seven doodles, each a set of `NS` strokes, in scroll order: `0` curious stick figure with
+ * "?", `1` krawly spider, `2` tallies receipt, `3` rampr graph, `4` stick figure in a tie with
+ * briefcase, `5` coffee, `6` mail. Adjacent stages morph stroke-for-stroke, so slot `i` is one pen
+ * stroke's identity through the film, not a fixed feature — slot 5 is an arm here, the tie body in
+ * stage 4, a steam squiggle in stage 5. Slots a stage doesn't need park at a collapse point.
  */
 export const STAGES: Stage[] = [
   // 0 — curious stick figure with a hand-drawn "?"

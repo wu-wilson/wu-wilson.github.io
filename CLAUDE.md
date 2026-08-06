@@ -12,7 +12,7 @@ The whole thing is **one implementation** driven by a single `requestAnimationFr
 - **The page is empty space.** The document body holds a tall empty scroll track (`800vh`, `SCROLL_LENGTH_VH`) and a `position: fixed`, full-viewport graph-paper **stage**. The stage holds one SVG (`viewBox="0 0 1600 900"`, `preserveAspectRatio="xMidYMid slice"`) with **18 stroke `<path>`s** plus the rampr axis labels, the seven caption divs, the scroll hint, and the static resume link.
 - **The engine** (`hooks/useNotebookFilm.ts`) owns the `requestAnimationFrame` loop. It reads `scrollY`, computes a smoothed progress `p ∈ [0,1]`, and every frame: morphs each stroke from the current stage to the next, adds "boil" (idle wobble), lays out the drawing/caption bands, transforms the SVG group to centre the doodle, and wipes the captions in. It locates elements by `data-*` markers within the stage, so the SVG, captions, and hint can live in separate components.
 - **The data model** (`lib/doodle.ts`, `constants/stages.ts`, `types/doodle.ts`). A stage is `NS = 18` strokes; a stroke is `NP = 12` points. Stroke constructors (`seg`, `circle`, `ell`, `poly`, `collapse`) build the geometry; `STAGES` is the seven finished doodles and `ANCHORS` their hand-tuned visual centres. Adjacent stages morph stroke-for-stroke, so a stroke *slot* is one pen stroke's identity through the whole film — what it **depicts** changes freely (slot 5 is an arm in the opening stage, the tie in the work stage, a steam squiggle over coffee), and slots a stage doesn't need park at a collapse point.
-- **Copy** (`constants/content.ts`) holds the project/contact links, the work-history lines, and the `RESUME` link; the caption text is JSX in `components/Captions.tsx`. Timing lives in `constants/animations.ts`. The resume PDF is `public/resume.pdf`, served from the site's own origin — swap the file to update it.
+- **Copy** (`constants/content.ts`) holds the project/contact links, the work-history lines, and the `RESUME` link; the caption text is JSX in `components/Captions.tsx`. Timing and layout constants live in `constants/animations.ts`. The resume PDF is `public/resume.pdf`, served from the site's own origin — swap the file to update it.
 - **Deploy:** static Vite build → GitHub Pages (`gh-pages -d dist`) on the `wu-wilson.github.io` repo, custom domain `wilsonwu.io` via `public/CNAME`, DNS on Cloudflare. No CI, no Docker, no server.
 
 ## Key Decisions
@@ -40,8 +40,8 @@ The whole thing is **one implementation** driven by a single `requestAnimationFr
 
 - `.claude/rules/code-style.md` — TypeScript, JSDoc, import ordering, naming, error handling. Loads for `src/**/*.{ts,tsx}`.
 - `.claude/rules/component-patterns.md` — React file structure, when the engine owns a value, the `data-*` contract. Loads for `src/**/*.{ts,tsx}`.
-- `.claude/rules/styling.md` — Tokens, the graph-paper visual language, inline-style boundaries, animation. Loads for `src/**/*.{tsx,css}` and `tailwind.config.js`.
-- `.claude/rules/responsive.md` — The single-engine layout system: the two bands, the landscape split, the 500px cap, the height-aware type scale, the resume link, safe areas. Loads for `src/**/*.{tsx,css}`.
+- `.claude/rules/styling.md` — Tokens, the graph-paper visual language, inline-style boundaries, animation. Loads for `src/**/*.{ts,tsx,css}` and `tailwind.config.js`.
+- `.claude/rules/responsive.md` — The single-engine layout system: the two bands, the landscape split, the 500px cap, the height-aware type scale, the resume link, safe areas. Loads for `src/**/*.{ts,tsx,css}`.
 
 ## Skills (reference knowledge)
 

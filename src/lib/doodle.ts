@@ -1,10 +1,10 @@
-import type { Point, Stroke } from '../types/doodle';
-
 /**
  * The stroke constructors the seven doodles are drawn with, the two counts that fix the
  * stroke-and-point grid every stage shares, and the geometry and easing helpers the engine
  * paints with. Every function here is pure — no DOM, no state, no time.
  */
+
+import type { Point, Stroke } from '../types/doodle';
 
 /** Points per stroke. Every stroke — line, ellipse, polyline, or parked point — has exactly this many. */
 export const NP = 12;

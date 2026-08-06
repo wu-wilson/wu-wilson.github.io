@@ -10,6 +10,15 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Gloria Hallelujah, the site's only font. Requested here rather than via an `@import` in
+         index.css so it downloads in parallel with the stylesheet instead of after it — the
+         engine measures the caption band behind `document.fonts.ready`. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap"
+    />
     <title>Wilson Wu</title>
   </head>
   <body>

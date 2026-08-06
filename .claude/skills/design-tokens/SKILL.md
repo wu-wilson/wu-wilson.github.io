@@ -26,7 +26,7 @@ Stored as **space-separated RGB channels** on `:root` in `src/index.css` (hex in
 
 ## Font
 
-- **Gloria Hallelujah** — the only family, the `body` default (`font-hand`). All text — captions, links, axis labels, the scroll cue — uses it. Loaded via the Google Fonts `@import` at the top of `index.css`.
+- **Gloria Hallelujah** — the only family, the `body` default (`font-hand`). All text — captions, links, axis labels, the scroll cue — uses it. Loaded from Google Fonts via a preconnected `<link>` in `index.html`.
 
 ## Type scale
 
@@ -48,6 +48,6 @@ Fluid `clamp()`s in `index.css` — there are no breakpoints, so these are the w
 
 ## Animation timing
 
-- `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `REVEAL_HALF`/`REVEAL_RAMP` (0.55 / 3.2, the reveal-window shape behind every caption wipe and fill), `STROKE_WIDTH` (2.6), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02).
+- `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `REVEAL_HALF`/`REVEAL_RAMP` (0.55 / 3.2, the reveal-window shape behind every caption wipe and fill), `STROKE_WIDTH` (2.6), `DOODLE_WORLD_SIZE`/`DOODLE_MAX_PX` (both 500 — the nominal doodle width in world units and the on-screen px cap; equal by coincidence, retune separately), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02).
 - Geometry counts live in `lib/doodle.ts`: `NP` (12 points/stroke), `NS` (18 strokes/stage).
 - There are no CSS keyframes — the only CSS transition is the scroll hint's `opacity`. `prefers-reduced-motion`: `index.css` clamps transition durations; the engine snaps progress and skips the boil.

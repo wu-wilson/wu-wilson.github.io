@@ -11,12 +11,14 @@ const INK = 'rgb(var(--ink))';
  * The single SVG that holds the whole doodle: the `NS` stroke paths (`data-s`) and the rampr axis
  * labels (`data-axes`), inside the group the engine transforms to place and scale them
  * (`data-zoom`). Paths render empty — the engine paints their `d`, opacity, and fill every frame.
+ * `aria-hidden` because the captions already carry the drawing's meaning in prose.
  * @returns The doodle SVG
  */
 export const DoodleStage: FC = () => (
   <svg
     viewBox="0 0 1600 900"
     preserveAspectRatio="xMidYMid slice"
+    aria-hidden="true"
     fill="none"
     strokeLinecap="round"
     strokeLinejoin="round"

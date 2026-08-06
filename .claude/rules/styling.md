@@ -1,5 +1,6 @@
 ---
 paths:
+  - "src/**/*.ts"
   - "src/**/*.tsx"
   - "src/**/*.css"
   - "tailwind.config.js"
@@ -19,7 +20,7 @@ Warm graph-paper, hand-drawn doodle aesthetic — cream page, a school-blue grid
 
 ## Visual language
 
-- **One font — Gloria Hallelujah** (`font-hand`, the `body` default), loaded via the Google Fonts `@import` at the top of `index.css`. All text is this family.
+- **One font — Gloria Hallelujah** (`font-hand`, the `body` default), loaded from Google Fonts via a preconnected `<link>` in `index.html` — not a CSS `@import`, which would serialize the font request behind the stylesheet. All text is this family.
 - **Graph paper:** `.graph-paper` paints the fixed stage — 1px `--grid` rules every 28px on both axes over `--paper`. Applied once on the stage root, never per element.
 - **Strokes:** the doodle SVG draws with `stroke: rgb(var(--ink))`, `stroke-width: 2.6` (`STROKE_WIDTH`), round caps/joins, `fill: none`. The engine turns fills on only for the tie (solid ink), the eyes, and the coffee surface, via token strings with alpha.
 - Prefer the bare paper surface and hairline strokes over shadows or borders.

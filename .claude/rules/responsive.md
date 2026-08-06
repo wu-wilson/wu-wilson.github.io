@@ -1,5 +1,6 @@
 ---
 paths:
+  - "src/**/*.ts"
   - "src/**/*.tsx"
   - "src/**/*.css"
 ---
@@ -26,6 +27,7 @@ The one persistent fixture. It sits in the **top-right in every orientation**, w
 
 - Insets are fluid and safe-area-aware — `top: max(clamp(14px, 2.2vh, 28px), env(safe-area-inset-top))`, `right` likewise on `2.2vw`/`40px` — so the link breathes on ultrawide (40px in) and tucks in on a phone (16px in). Its type scale is in the `design-tokens` skill.
 - The `env(...)` terms matter: `viewport-fit=cover` makes notch and rounded-corner insets real, and they land on the left/right edges in landscape.
+- **The box stays shrink-wrapped to the word, so nothing in flow inside it may be percentage-sized.** With no `width` on an absolutely positioned box the width is shrink-to-fit, which makes an in-flow percentage child a cyclic percentage that each engine resolves its own way — Safari once stretched the whole link to the 300px default replaced width. The hand-drawn underline is therefore positioned rather than in flow (`left: 0; bottom: 0; width: 100%`, with `padding-bottom: 0.5em` reserving its band), keeping it out of the shrink-to-fit pass. Keep any future decoration out of flow the same way.
 - **What keeps it clear is the caption type scale above, not a breakpoint.** In the landscape branch the caption column is vertically centred on the right, so its height — driven by font size — is what decides whether it reaches the corner. At the old 19px landscape captions it collided on short viewports and needed a corner swap; at 15px it clears by 58–105px on every real phone landscape. If you ever raise the caption size again, re-measure this before assuming it still fits.
 
 ## Targets

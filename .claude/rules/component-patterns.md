@@ -37,7 +37,7 @@ Component and hook files export exactly one thing, laid out in this order:
 ## Content & data
 
 - The seven doodles live in `constants/stages.ts` (`STAGES`, `ANCHORS`), built from the constructors in `lib/doodle.ts`; the point/stroke/stage types are in `types/doodle.ts`. These coordinates are the design's verbatim source of truth — edit doodles here, not in the engine.
-- Caption copy is JSX in `components/Captions.tsx`; the repeated bits (project/contact links, work-history lines) come from `constants/content.ts`. Timing constants live in `constants/animations.ts`.
+- Caption copy is JSX in `components/Captions.tsx`; the repeated bits (project/contact links, work-history lines) come from `constants/content.ts`. Timing and layout constants live in `constants/animations.ts`.
 
 ## Limits
 

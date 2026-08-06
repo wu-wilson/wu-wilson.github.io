@@ -27,6 +27,7 @@ export const ScrollHint: FC = () => (
       width={34}
       height={44}
       viewBox="0 0 26 34"
+      aria-hidden="true"
       fill="none"
       stroke="currentColor"
       strokeWidth={2}

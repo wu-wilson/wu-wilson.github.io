@@ -6,6 +6,8 @@ import {
   BOIL_AMP,
   BOIL_MS,
   CAP_GAP,
+  DOODLE_MAX_PX,
+  DOODLE_WORLD_SIZE,
   DWELL_HOLD,
   DWELL_MORPH,
   EASE,
@@ -80,6 +82,7 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       // top sits at the same height for every stage. Phone landscape splits left/right instead.
       const vw = window.innerWidth;
       const vh = window.innerHeight;
+      // 1600×900 mirrors DoodleStage's viewBox; 800/450 further down are its centre.
       const kSlice = Math.max(vw / 1600, vh / 900);
       const landscape = vh < 480 && vw > vh;
 
@@ -89,11 +92,14 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
         capH = Math.max(60, ...anns.map((g) => g.offsetHeight || 0));
       }
       const capBand = landscape ? 0 : capH;
-      // Drawing size: 65% of the smaller side, hard-capped at 500px, shrunk to fit if needed.
+      // Drawing size: 65% of the smaller side, hard-capped, shrunk to fit the viewport if needed.
       const D = landscape
         ? Math.min(0.78 * vh, 0.42 * vw)
-        : Math.max(120, Math.min(0.65 * Math.min(vw, vh), 500, vh - 44 - CAP_GAP - capBand));
-      const s = D / (500 * kSlice);
+        : Math.max(
+            120,
+            Math.min(0.65 * Math.min(vw, vh), DOODLE_MAX_PX, vh - 44 - CAP_GAP - capBand)
+          );
+      const s = D / (DOODLE_WORLD_SIZE * kSlice);
       const unitTop = landscape
         ? (vh - D) / 2
         : Math.max(22, (vh - (D + CAP_GAP + capBand)) / 2);

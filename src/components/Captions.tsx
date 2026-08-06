@@ -19,13 +19,15 @@ const stackStyle: CSSProperties = {
 /**
  * The seven one-line captions, one per stage, in scroll order and tagged `data-ann={i}` — the
  * engine positions each under the drawing band and wipes it in as its stage arrives. Base
- * layout and the starting clip live in the `[data-ann]` rule in `index.css`.
+ * layout and the starting clip live in the `[data-ann]` rule in `index.css`. The opening line is
+ * the page's `<h1>`; Tailwind's preflight strips heading margins and sizing, so it renders as a
+ * plain caption.
  * @returns The caption layer
  */
 export const Captions: FC = () => (
   <>
     <div data-ann={0}>
-      <span>hi, i'm wilson. i build things.</span>
+      <h1>hi, i'm wilson. i build things.</h1>
     </div>
 
     <div data-ann={1}>

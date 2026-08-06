@@ -38,6 +38,15 @@ export const REVEAL_RAMP = 3.2;
 /** Pen stroke width in world units (SVG `stroke-width`). */
 export const STROKE_WIDTH = 2.6;
 
+/**
+ * Nominal width of a doodle in world units — the reference the group scale is derived against.
+ * Shares a value with {@link DOODLE_MAX_PX} by coincidence, not by dependency; retune separately.
+ */
+export const DOODLE_WORLD_SIZE = 500;
+
+/** Hard cap on the drawing's on-screen size in px, so the doodle can't balloon on wide viewports. */
+export const DOODLE_MAX_PX = 500;
+
 /** Vertical gap in px between the drawing band and the caption band. */
 export const CAP_GAP = 36;
 

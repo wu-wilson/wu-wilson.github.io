@@ -20,8 +20,6 @@
               └───────────────┘
 ```
 
-A tall empty scroll track drives a fixed, full-viewport graph-paper stage. React renders one SVG (18 stroke paths), the captions, and a persistent resume link; a single `requestAnimationFrame` loop maps scroll position to progress and morphs one doodle into the next, wobbles it at rest, and wipes the captions in. Layout is computed per frame from the viewport size, so there are no CSS breakpoints.
-
 ## 🚀 Stack
 
 - React 18 (TS)

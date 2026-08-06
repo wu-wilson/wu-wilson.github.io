@@ -9,7 +9,8 @@ const ch = (name) => `rgb(var(${name}) / <alpha-value>)`;
  * names — the `collapse` stroke constructor, `onResize`, `position: 'absolute'` in style objects,
  * even the word "grid" inside a docstring — so it was emitting a dozen utilities that no markup
  * uses. Scoping the extractor keeps real classes working and stops a comment from changing the
- * stylesheet.
+ * stylesheet. No component uses a utility class — the only ones are `@apply`ed in `index.css` —
+ * so Tailwind's "no utility classes were detected" build warning is expected here.
  * @param content - Raw source text of one scanned `.ts`/`.tsx` file
  * @returns Every whitespace-separated class name written literally inside a `className`
  */

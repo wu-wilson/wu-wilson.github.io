@@ -23,7 +23,7 @@ interface NotebookProps {
  * @returns The notebook experience
  */
 export const Notebook: FC<NotebookProps> = ({ reducedMotion }) => {
-  const stageRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLElement>(null);
   useNotebookFilm(stageRef, reducedMotion);
 
   return (
@@ -31,7 +31,7 @@ export const Notebook: FC<NotebookProps> = ({ reducedMotion }) => {
       {/* Empty scroll track — its length sets the pace of the whole story. */}
       <div style={{ height: `${SCROLL_LENGTH_VH}vh` }} />
 
-      <div
+      <main
         ref={stageRef}
         className="graph-paper"
         style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}
@@ -41,7 +41,7 @@ export const Notebook: FC<NotebookProps> = ({ reducedMotion }) => {
         <ScrollHint />
         {/* Last so the one clickable fixture paints above the engine-driven layers. */}
         <ResumeLink />
-      </div>
+      </main>
     </>
   );
 };
