@@ -43,11 +43,12 @@ Fluid `clamp()`s in `index.css` — there are no breakpoints, so these are the w
 
 ## Strokes & fills
 
-- The doodle SVG: `stroke: rgb(var(--ink))`, `stroke-width: 2.6` (`STROKE_WIDTH`), round caps/joins, `fill: none`.
+- The doodle SVG: `stroke: rgb(var(--ink))`, `stroke-width: 2.6` (`STROKE_WIDTH`), round caps/joins, `fill: none`. That is 2.6 **world** units — the group scale and the slice scale cancel, so on screen it renders at `STROKE_WIDTH × D / DOODLE_WORLD_SIZE` px, i.e. 2.6px only at the 500px cap and thinner as the drawing shrinks.
+- **One pen for the whole page.** The scroll arrow takes that same px value from `--hint-stroke` (engine-set) with `non-scaling-stroke`; the resume underline is a deliberate exception at a flat 1.6px, since it is subordinate chrome rather than part of the drawing.
 - The engine turns fills on for a few slots via token strings with alpha: the tie (strokes 5, 15) fills solid ink during the work stage; the eyes (strokes 1–3) fill during the stick-figure/spider stages; the coffee surface reuses an eye slot's fill during the coffee stage.
 
 ## Animation timing
 
 - `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `REVEAL_HALF`/`REVEAL_RAMP` (0.55 / 3.2, the reveal-window shape behind every caption wipe and fill), `STROKE_WIDTH` (2.6), `DOODLE_WORLD_SIZE`/`DOODLE_MAX_PX` (both 500 — the nominal doodle width in world units and the on-screen px cap; equal by coincidence, retune separately), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02).
 - Geometry counts live in `lib/doodle.ts`: `NP` (12 points/stroke), `NS` (18 strokes/stage).
-- There are no CSS keyframes — the only CSS transition is the scroll hint's `opacity`. `prefers-reduced-motion`: `index.css` clamps transition durations; the engine snaps progress and skips the boil.
+- The only CSS-side motion is the scroll cue: an `opacity` transition on the hint, and `hint-nudge` on its arrow — a 9px bob, 1.1s `ease-in-out` each way on `alternate` (2.2s round trip, seamless reversal). `prefers-reduced-motion`: `index.css` clamps transition durations and disables animations; the engine snaps progress and skips the boil.

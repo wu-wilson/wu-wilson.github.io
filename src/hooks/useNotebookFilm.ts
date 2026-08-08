@@ -14,6 +14,7 @@ import {
   HINT_FADE,
   REVEAL_HALF,
   REVEAL_RAMP,
+  STROKE_WIDTH,
 } from '../constants/animations';
 import { ANCHORS, STAGES } from '../constants/stages';
 
@@ -137,6 +138,14 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
 
       if (hint) {
         hint.style.opacity = p < HINT_FADE ? '1' : '0';
+        // Draw the arrow with the same pen as the doodle. The group scale and the slice scale
+        // cancel in `STROKE_WIDTH × s × kSlice`, so the drawing's rendered stroke is only ever
+        // `STROKE_WIDTH × D / DOODLE_WORLD_SIZE` px — which the arrow's paths adopt verbatim via
+        // `non-scaling-stroke`. `D` folds in the measured caption height, so CSS cannot derive it.
+        hint.style.setProperty(
+          '--hint-stroke',
+          ((STROKE_WIDTH * D) / DOODLE_WORLD_SIZE).toFixed(2) + 'px'
+        );
         if (landscape) {
           hint.style.top = 'auto';
           hint.style.bottom = '12px';

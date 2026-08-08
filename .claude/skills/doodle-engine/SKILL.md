@@ -37,7 +37,7 @@ The site's motion is one idea: **scroll position → a normalized progress value
 - `data-s="0".."17"` — the 18 stroke paths, direct children of `data-zoom` (`d`, opacity, fill). Document order **must** match the stroke index.
 - `data-axes` — the `time`/`hiring` labels (opacity).
 - `data-ann="0".."6"` — the seven captions (clip-path, pointer-events, position).
-- `data-hint` — the scroll cue (opacity, top/bottom).
+- `data-hint` — the scroll cue (opacity, top/bottom, and `--hint-stroke`).
 
 Renaming or removing any of these requires updating the matching engine section. Keep the SVG paths in order 0→17 so `querySelectorAll('[data-s]')` lines up with `STAGES`.
 

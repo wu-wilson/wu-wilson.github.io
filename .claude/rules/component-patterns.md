@@ -31,7 +31,7 @@ Component and hook files export exactly one thing, laid out in this order:
   - `data-zoom` — the group the engine transforms to place/scale the drawing (also carries the paths' `stroke-width`).
   - `data-axes` — the rampr `time`/`hiring` labels group (engine sets opacity).
   - `data-ann="0".."6"` — the seven captions (engine sets clip-path, pointer-events, position).
-  - `data-hint` — the scroll cue (engine sets opacity, top/bottom).
+  - `data-hint` — the scroll cue (engine sets opacity, top/bottom, and `--hint-stroke`, the arrow's ink weight in px).
 - If you add, rename, or remove a `data-*`, update the corresponding section of `useNotebookFilm`. Keep the SVG paths in document order 0→17 so `querySelectorAll('[data-s]')` indexes line up with `STAGES`.
 
 ## Content & data

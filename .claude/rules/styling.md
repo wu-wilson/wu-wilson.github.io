@@ -37,5 +37,6 @@ Warm graph-paper, hand-drawn doodle aesthetic — cream page, a school-blue grid
 
 ## Animation
 
-- All motion is hand-rolled `requestAnimationFrame` in `hooks/useNotebookFilm.ts`. There are no CSS keyframes — the only CSS transition is the scroll hint's `opacity`. Timing constants live in `constants/animations.ts` (`EASE`, `BOIL_MS`, `BOIL_AMP`, dwell, reveal, `SCROLL_LENGTH_VH`).
-- Honor `prefers-reduced-motion`: `index.css` clamps transition durations, and the engine snaps progress (no easing) and skips the boil.
+- All motion is hand-rolled `requestAnimationFrame` in `hooks/useNotebookFilm.ts`, with the scroll cue as the sole CSS exception: an `opacity` transition on the hint, and the `hint-nudge` keyframe on its arrow. Timing constants live in `constants/animations.ts` (`EASE`, `BOIL_MS`, `BOIL_AMP`, dwell, reveal, `SCROLL_LENGTH_VH`).
+- **An idle loop belongs in CSS, not the engine.** The engine repaints only when scrolling, boiling, or resized — 6fps at rest, and nothing at all under reduced motion — so driving a decorative loop through it would mean forcing 60fps repaints of all 18 strokes. Keep such motion on the compositor, and off any property the engine writes (the hint's `opacity`) or that carries layout (its centring `transform`); a CSS animation outranks inline styles and would silently break both.
+- Honor `prefers-reduced-motion`: `index.css` clamps transition durations and disables animations, and the engine snaps progress (no easing) and skips the boil.

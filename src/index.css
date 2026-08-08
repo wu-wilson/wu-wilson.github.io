@@ -92,6 +92,25 @@
     overflow: visible;
   }
 
+  /* The scroll cue's arrow — a continuous bob. `alternate` mirrors the return leg and
+     `ease-in-out` zeroes velocity at both ends, so the loop reverses without a seam. Only the
+     arrow may move: the wrapper's `transform` centres the hint and its `opacity` is engine-written,
+     and a CSS animation on either would outrank both. */
+  .hint-arrow {
+    /* Ink weight matched to the doodle's, in px, set per frame by the engine. */
+    stroke-width: var(--hint-stroke, 2.6px);
+    animation: hint-nudge 1.1s ease-in-out infinite alternate;
+  }
+
+  @keyframes hint-nudge {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(9px);
+    }
+  }
+
   /* Caption band. Base layout only; the engine sets `top`/`left`/`width`/`clip-path` per frame
      (drawing-band-relative on portrait/desktop, a right column in phone landscape). Starts
      fully clipped so nothing flashes before the first paint. */
@@ -119,11 +138,12 @@
   }
 }
 
-/* Reduced motion: the engine already drops the boil and progress easing; also clamp the
-   hint's opacity transition so nothing eases on its own. The scroll-scrubbed drawing stays —
-   it is user-driven, not autonomous. */
+/* Reduced motion: the engine already drops the boil and progress easing; also clamp the hint's
+   opacity transition and stop its arrow nudging, so nothing animates on its own. The
+   scroll-scrubbed drawing stays — it is user-driven, not autonomous. */
 @media (prefers-reduced-motion: reduce) {
   * {
     transition-duration: 0.01ms !important;
+    animation: none !important;
   }
 }
