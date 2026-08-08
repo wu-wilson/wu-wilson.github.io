@@ -22,12 +22,13 @@ The site's motion is one idea: **scroll position → a normalized progress value
 - **Rendering:** quadratic-midpoint curves, except the tie (slots 5, 15) renders straight (`L`) while the work stage is on screen so corners stay crisp (`strokePath(pts, sharp)`).
 - **Opacity:** driven by comparing `extent()` of the source and target strokes — one headed to / coming from a park point fades over the first / last 20% of the morph so no dot lingers; slots parked in both stages are hidden outright; and a stroke that pinches to nothing mid-morph fades too.
 - **`stageWindow(q, i)`** is the one reveal shape in the engine: `clamp01((q−(i−REVEAL_HALF))·REVEAL_RAMP) · clamp01((i+REVEAL_HALF−q)·REVEAL_RAMP)` (0.55 / 3.2), peaking while stage `i` is on screen. It drives the caption wipes, the axis labels (stage 3), **and** every fill: the tie (slots 5, 15) over stage 4; slot 1 over stages 0 and 4; slot 2 over stages 0/1/4 plus 5, where it is the **coffee surface** rather than an eye; slot 3 over stage 1 only, where it is the spider's second eye (it is the mouth elsewhere, and stays unfilled).
-- Repaints only when scrolling, boiling, or after a resize / font load (a dirty flag).
+- Repaints only when scrolling, boiling, or after a stage resize / window resize / font load (a dirty flag). The stage resize comes from a `ResizeObserver` — a box change has to be its own trigger, since under reduced motion there is no boil to carry it.
 
 ## Responsive layout (in `paint()`)
 
-- Two screen bands (drawing top, caption below); the interpolated anchor is pinned to the drawing band's centre via the `data-zoom` transform. `D = max(120, min(0.65·min(vw,vh), 500, vh − 44 − 36 − capH))` — 500px hard cap; `capH` is the measured tallest caption.
-- **Phone landscape** (`vh < 480 && vw > vh`): drawing at 30% width, captions in a right column (`left 56%`, `width 40vw`, vertically centred), hint pinned to the bottom.
+- Every layout number comes from the **stage's measured box** (`stageW`/`stageH`), never `window.innerWidth`/`innerHeight` — the two diverge while mobile browser chrome animates. See `.claude/rules/responsive.md`.
+- Two screen bands (drawing top, caption below); the interpolated anchor is pinned to the drawing band's centre via the `data-zoom` transform. `D = max(120, min(0.65·min(stageW,stageH), 500, stageH − 44 − 36 − capH))` — 500px hard cap; `capH` is the measured tallest caption.
+- **Phone landscape** (`stageH < 480 && stageW > stageH`): drawing at 30% width, captions in a right column (`left 56%`, `width 40vw`, vertically centred), hint pinned to the bottom.
 - Captions wipe in via `clip-path: inset(0 X% 0 0)` driven by `stageWindow(q, i)`; the rampr axis labels share `stageWindow(q, 3)`.
 
 ## `data-*` catalog

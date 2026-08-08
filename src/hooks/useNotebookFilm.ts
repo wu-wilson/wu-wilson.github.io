@@ -47,7 +47,8 @@ const makeJitter = (): Point[][] =>
  * progress value, then paints the whole frame as a pure function of it — morph, boil, band
  * layout, and caption wipes. Animated elements are found by their `data-*` marker inside the
  * stage, so they can live in separate components.
- * @param rootRef - Ref to the fixed stage element holding the animated elements
+ * @param rootRef - Ref to the fixed stage: container of the animated elements, and the surface
+ * every layout number is measured from
  * @param reducedMotion - When `true`, snap to the scroll position and disable the idle wobble
  */
 export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: boolean): void {
@@ -71,6 +72,21 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
     let jitter = makeJitter();
     let raf = 0;
 
+    // The stage's own box, and the source of every layout number below — not
+    // `window.innerWidth/innerHeight`. The two disagree whenever mobile browser chrome animates
+    // (pull-to-refresh, toolbar collapse): the window reports the visual viewport while the fixed
+    // stage keeps its own size, so sizing the drawing from the window paints it into a surface it
+    // was not measured for. The SVG fills this box exactly (`inset: 0`, 100%×100%), so measuring
+    // the stage also keeps the engine's slice scale identical to the one the SVG really applies.
+    let stageW = 0;
+    let stageH = 0;
+    const measureStage = () => {
+      const rect = root.getBoundingClientRect();
+      stageW = rect.width;
+      stageH = rect.height;
+    };
+    measureStage();
+
     const paint = (p: number) => {
       const K = STAGES.length - 1;
       const q = p * K;
@@ -78,32 +94,30 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       // Dwell: hold each finished doodle, morph only through the middle of its segment.
       const f = smoothstep((q - k - DWELL_HOLD) / DWELL_MORPH);
 
-      // Two fixed screen bands per viewport — drawing on top, caption below — so the caption
+      // Two fixed screen bands per stage — drawing on top, caption below — so the caption
       // top sits at the same height for every stage. Phone landscape splits left/right instead.
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
       // 1600×900 mirrors DoodleStage's viewBox; 800/450 further down are its centre.
-      const kSlice = Math.max(vw / 1600, vh / 900);
-      const landscape = vh < 480 && vw > vh;
+      const kSlice = Math.max(stageW / 1600, stageH / 900);
+      const landscape = stageH < 480 && stageW > stageH;
 
-      // Measure the tallest caption once per viewport size (re-measured on resize/font load).
-      if (!landscape && measureKey !== vw + 'x' + vh) {
-        measureKey = vw + 'x' + vh;
+      // Measure the tallest caption once per stage size (re-measured on resize/font load).
+      if (!landscape && measureKey !== stageW + 'x' + stageH) {
+        measureKey = stageW + 'x' + stageH;
         capH = Math.max(60, ...anns.map((g) => g.offsetHeight || 0));
       }
       const capBand = landscape ? 0 : capH;
-      // Drawing size: 65% of the smaller side, hard-capped, shrunk to fit the viewport if needed.
+      // Drawing size: 65% of the smaller side, hard-capped, shrunk to fit the stage if needed.
       const D = landscape
-        ? Math.min(0.78 * vh, 0.42 * vw)
+        ? Math.min(0.78 * stageH, 0.42 * stageW)
         : Math.max(
             120,
-            Math.min(0.65 * Math.min(vw, vh), DOODLE_MAX_PX, vh - 44 - CAP_GAP - capBand)
+            Math.min(0.65 * Math.min(stageW, stageH), DOODLE_MAX_PX, stageH - 44 - CAP_GAP - capBand)
           );
       const s = D / (DOODLE_WORLD_SIZE * kSlice);
       const unitTop = landscape
-        ? (vh - D) / 2
-        : Math.max(22, (vh - (D + CAP_GAP + capBand)) / 2);
-      const drawCX = landscape ? 0.3 * vw : vw / 2;
+        ? (stageH - D) / 2
+        : Math.max(22, (stageH - (D + CAP_GAP + capBand)) / 2);
+      const drawCX = landscape ? 0.3 * stageW : stageW / 2;
       const drawCY = unitTop + D / 2;
       const capTop = unitTop + D + CAP_GAP;
 
@@ -112,8 +126,8 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       const aB = ANCHORS[k + 1];
       const acx = aA[0] + (aB[0] - aA[0]) * f;
       const acy = aA[1] + (aB[1] - aA[1]) * f;
-      const vbx = 800 + (drawCX - vw / 2) / kSlice;
-      const vby = 450 + (drawCY - vh / 2) / kSlice;
+      const vbx = 800 + (drawCX - stageW / 2) / kSlice;
+      const vby = 450 + (drawCY - stageH / 2) / kSlice;
       if (zoom) {
         zoom.setAttribute(
           'transform',
@@ -128,7 +142,7 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
           hint.style.bottom = '12px';
         } else {
           hint.style.bottom = 'auto';
-          hint.style.top = Math.round(Math.min(capTop + capBand + 18, vh - 72)) + 'px';
+          hint.style.top = Math.round(Math.min(capTop + capBand + 18, stageH - 72)) + 'px';
         }
       }
 
@@ -217,10 +231,18 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       const max = document.documentElement.scrollHeight - window.innerHeight;
       target = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     };
+    // Re-measure and repaint whenever the drawing surface changes size. The observer is the load
+    // -bearing trigger — it catches the stage's own box moving while browser chrome animates,
+    // which a `resize` event does not reliably correspond to; without it the layout would only
+    // catch up on the next scroll or boil tick, and under reduced motion never. The window event
+    // stays as the fallback for changes the observer misses.
     const onResize = () => {
+      measureStage();
       measureKey = null;
       dirty = true;
     };
+    const stageObserver = new ResizeObserver(onResize);
+    stageObserver.observe(root);
 
     let boil: ReturnType<typeof setInterval> | undefined;
     if (!reducedMotion) {
@@ -257,6 +279,7 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
     return () => {
       cancelAnimationFrame(raf);
       if (boil) clearInterval(boil);
+      stageObserver.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
