@@ -15,7 +15,8 @@ One implementation, made responsive by the engine's per-frame layout math — no
 
 - **Two screen bands per stage** — drawing on top, caption below — so the caption top sits at the same height for every stage. The drawing's interpolated anchor is pinned to the drawing band's centre via the `data-zoom` group transform.
 - `kSlice = max(stageW/1600, stageH/900)` is the SVG slice scale; `s = D / (500 · kSlice)` the group scale.
-- **Caption band height** `capH` is the measured tallest caption `offsetHeight` (min 60), re-measured when the stage size changes and after `document.fonts.ready`.
+- **Caption band height** `capH` is the measured tallest caption `offsetHeight` (min 60), re-measured when the stage size changes and after `document.fonts.ready`. It fixes the drawing band at one height for every stage — but the **scroll hint sits under `openingCapH`, stage 0's own height**, because `HINT_FADE` retires the hint before any other caption appears. Reserving the tallest caption's height for it would push it to the floor for no reason.
+- The hint's bottom clamp subtracts its measured height **plus `HINT_NUDGE_PX`**. The arrow's bob is a `transform`, so it never reaches layout; anything positioning the hint has to account for that travel by hand.
 - **Drawing size** `D = max(120, min(0.65·min(stageW,stageH), 500, stageH − 44 − CAP_GAP − capH))` — a **500px hard cap** keeps the doodle from ballooning on desktop/ultrawide, and the `stageH − …` term shrinks it to fit shorter stages.
 - **Phone landscape** (`stageH < 480 && stageW > stageH`): the drawing centres at 30% of width and the captions move to a right column (`left: 56%`, `width: 40vw`, vertically centred); `capH` is not subtracted, and the scroll hint pins to the bottom.
 

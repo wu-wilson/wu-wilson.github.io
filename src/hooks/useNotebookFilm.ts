@@ -12,6 +12,7 @@ import {
   DWELL_MORPH,
   EASE,
   HINT_FADE,
+  HINT_NUDGE_PX,
   REVEAL_HALF,
   REVEAL_RAMP,
   STROKE_WIDTH,
@@ -68,8 +69,10 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
     let target = 0;
     let dirty = true;
     let measureKey: string | null = null;
-    // Always measured (below) before it is first read; 0 is just a placeholder.
+    // Always measured (below) before they are first read; 0 is just a placeholder.
     let capH = 0;
+    let openingCapH = 0;
+    let hintH = 0;
     let jitter = makeJitter();
     let raf = 0;
 
@@ -101,10 +104,14 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       const kSlice = Math.max(stageW / 1600, stageH / 900);
       const landscape = stageH < 480 && stageW > stageH;
 
-      // Measure the tallest caption once per stage size (re-measured on resize/font load).
+      // Measure once per stage size (re-measured on resize/font load): the tallest caption, stage
+      // 0's alone, and the scroll cue's.
       if (!landscape && measureKey !== stageW + 'x' + stageH) {
         measureKey = stageW + 'x' + stageH;
-        capH = Math.max(60, ...anns.map((g) => g.offsetHeight || 0));
+        const capHeights = anns.map((g) => g.offsetHeight || 0);
+        capH = Math.max(60, ...capHeights);
+        openingCapH = capHeights[0] || capH;
+        hintH = hint ? hint.offsetHeight : 0;
       }
       const capBand = landscape ? 0 : capH;
       // Drawing size: 65% of the smaller side, hard-capped, shrunk to fit the stage if needed.
@@ -151,7 +158,13 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
           hint.style.bottom = '12px';
         } else {
           hint.style.bottom = 'auto';
-          hint.style.top = Math.round(Math.min(capTop + capBand + 18, stageH - 72)) + 'px';
+          // Under stage 0's caption rather than the tallest one's reservation — `HINT_FADE`
+          // retires the hint before any other caption appears. The clamp subtracts
+          // `HINT_NUDGE_PX` because the arrow's bob is a transform and never reaches layout.
+          hint.style.top =
+            Math.round(
+              Math.min(capTop + openingCapH + 18, stageH - hintH - HINT_NUDGE_PX - 8)
+            ) + 'px';
         }
       }
 

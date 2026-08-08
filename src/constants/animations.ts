@@ -52,3 +52,10 @@ export const CAP_GAP = 36;
 
 /** Scroll fraction past which the "scroll" hint fades out. */
 export const HINT_FADE = 0.02;
+
+/**
+ * Downward travel of the hint arrow's nudge, in px. Must stay in step with the `hint-nudge`
+ * keyframe in `index.css`: the nudge is a transform, so it never reaches layout, and the engine
+ * has to subtract it by hand to keep the arrow inside the stage.
+ */
+export const HINT_NUDGE_PX = 9;
