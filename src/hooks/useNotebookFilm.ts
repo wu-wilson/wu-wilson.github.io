@@ -231,11 +231,11 @@ export function useNotebookFilm(rootRef: RefObject<HTMLElement>, reducedMotion: 
       const max = document.documentElement.scrollHeight - window.innerHeight;
       target = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     };
-    // Re-measure and repaint whenever the drawing surface changes size. The observer is the load
-    // -bearing trigger — it catches the stage's own box moving while browser chrome animates,
-    // which a `resize` event does not reliably correspond to; without it the layout would only
-    // catch up on the next scroll or boil tick, and under reduced motion never. The window event
-    // stays as the fallback for changes the observer misses.
+    // Re-measure and repaint whenever the drawing surface changes size. The observer is the
+    // load-bearing trigger: it catches the stage's own box moving while browser chrome animates,
+    // which a `resize` event does not reliably correspond to. Without it the layout would only
+    // catch up on the next scroll or boil tick — and under reduced motion, never. The window
+    // event stays as the fallback for changes the observer misses.
     const onResize = () => {
       measureStage();
       measureKey = null;

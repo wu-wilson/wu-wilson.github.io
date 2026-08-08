@@ -9,13 +9,13 @@ paths:
 
 One implementation, made responsive by the engine's per-frame layout math — not by media queries or separate component trees. `useNotebookFilm` re-derives the layout every frame from the **stage's own measured box** (`stageW`/`stageH`), so it adapts continuously as the surface changes.
 
-**Measure the stage, never `window.innerWidth`/`innerHeight`.** The two disagree whenever mobile browser chrome animates — the window reports the visual viewport while the fixed stage keeps its own size — and sizing the drawing from the window paints it into a surface it was not measured for. On iOS Safari that produced a doodle that grew in portrait and shrank in landscape during pull-to-refresh, and captions that hung still while the graph paper slid past them. The box is re-measured on a `ResizeObserver` over the stage (plus `resize` as a fallback), and each measurement sets the dirty flag.
+**Measure the stage, never `window.innerWidth`/`innerHeight`.** The two diverge while mobile browser chrome animates — the window reports the visual viewport, the fixed stage keeps its own size — so window-derived layout paints the drawing into a surface it was not measured for, mis-sizing it and detaching it from the captions. A `ResizeObserver` on the stage re-measures and sets the dirty flag; `resize` is the fallback. Rationale in the engine's own comment.
 
 ## The layout system (`paint()` in `hooks/useNotebookFilm.ts`)
 
-- **Two screen bands per viewport** — drawing on top, caption below — so the caption top sits at the same height for every stage. The drawing's interpolated anchor is pinned to the drawing band's centre via the `data-zoom` group transform.
-- `kSlice = max(stageW/1600, stageH/900)` is the SVG slice scale; `s = D / (500 · kSlice)` the group scale. Deriving it from the stage keeps it identical to the scale the SVG's `slice` really applies, since the SVG fills that box exactly.
-- **Caption band height** `capH` is the measured tallest caption `offsetHeight` (min 60), re-measured when the viewport size changes and after `document.fonts.ready`.
+- **Two screen bands per stage** — drawing on top, caption below — so the caption top sits at the same height for every stage. The drawing's interpolated anchor is pinned to the drawing band's centre via the `data-zoom` group transform.
+- `kSlice = max(stageW/1600, stageH/900)` is the SVG slice scale; `s = D / (500 · kSlice)` the group scale.
+- **Caption band height** `capH` is the measured tallest caption `offsetHeight` (min 60), re-measured when the stage size changes and after `document.fonts.ready`.
 - **Drawing size** `D = max(120, min(0.65·min(stageW,stageH), 500, stageH − 44 − CAP_GAP − capH))` — a **500px hard cap** keeps the doodle from ballooning on desktop/ultrawide, and the `stageH − …` term shrinks it to fit shorter stages.
 - **Phone landscape** (`stageH < 480 && stageW > stageH`): the drawing centres at 30% of width and the captions move to a right column (`left: 56%`, `width: 40vw`, vertically centred); `capH` is not subtracted, and the scroll hint pins to the bottom.
 
