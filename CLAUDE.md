@@ -28,7 +28,7 @@ The whole thing is **one implementation** driven by a single `requestAnimationFr
 - Add a backend, database, auth, analytics, or any server-side anything — the site is static and frontend-only. Contact stays a `mailto:` link.
 - Add an animation library (Framer Motion, GSAP, anime.js, Lenis) or a scroll library — all motion is hand-rolled `requestAnimationFrame` + SVG + CSS.
 - Add UI, charting, or drawing libraries — every doodle is generated SVG built from the stroke constructors.
-- Add images or icon fonts — every mark on the page is generated SVG; keep it that way. (`public/resume.pdf` is a linked document, not a rendered asset, and is the only file in `public/` besides `CNAME` and the favicon.)
+- Add images or icon fonts — every mark on the page is generated SVG; keep it that way. Nothing in `public/` is ever painted on the page: `CNAME`, the favicon, `resume.pdf`, `og.png` (the link-preview card), `robots.txt`, `sitemap.xml`. Anything added there must clear the same bar.
 - Write test files or install testing libraries (TypeScript `strict` is the only linter).
 - Use `any`, `as` casts (unless genuinely unavoidable), or default exports.
 - Hardcode hex colors — use the semantic tokens from `index.css` / `tailwind.config.js`, including inside the engine (`rgb(var(--token))`). No dark mode, no theme toggle.
