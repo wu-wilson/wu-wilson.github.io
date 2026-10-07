@@ -9,7 +9,7 @@ A warm graph-paper doodle: cream page, a school-blue grid, ink strokes, one hand
 
 ## Color tokens
 
-Stored as **space-separated RGB channels** on `:root` in `src/index.css` (hex in a comment), consumed through `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js`. Never hardcode hex — not in components, not in the engine (it assigns `rgb(var(--token))` / `rgb(var(--token) / a)` strings).
+Stored as **space-separated RGB channels** on `:root` in `src/index.css` (hex in a comment), consumed through `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js`. Never hardcode hex — not in components, not in the engine (its fills are `currentColor` with a `fill-opacity`, inheriting the page's `--ink` text colour).
 
 ```css
 :root {
@@ -26,14 +26,14 @@ Stored as **space-separated RGB channels** on `:root` in `src/index.css` (hex in
 
 ## Font
 
-- **Gloria Hallelujah** — the only family, the `body` default (`font-hand`). All text — captions, links, axis labels, the scroll cue — uses it. Loaded from Google Fonts via a preconnected `<link>` in `index.html`.
+- **Gloria Hallelujah** — the only family, the `body` default (`font-hand`). All text — captions, links, axis labels, the scroll cue — uses it. Self-hosted as `public/fonts/gloria-hallelujah.woff2` (latin subset, `font-display: swap`), declared in `index.css` and preloaded from `index.html`.
 
 ## Type scale
 
 Fluid `clamp()`s in `index.css` — there are no breakpoints, so these are the whole scale:
 
-- **Captions** (`[data-ann]`): `clamp(15px, min(2.2vw, 3.5vh), 19px)`. The `3.5vh` term is deliberate — a width-only scale inflated captions when a phone rotated. Rationale in `.claude/rules/responsive.md`.
-- **Resume link** (`.resume-link`): `clamp(13px, 1.15vw, 17px)` — subordinate to the captions at every size.
+- **Captions** (`[data-ann]`): `clamp(15px, min(2.2vw, 3.5vh), 24px)`. The `3.5vh` term is deliberate — a width-only scale inflated captions when a phone rotated. Rationale in `.claude/rules/responsive.md`.
+- **Resume link** (`.resume-link`): `clamp(13px, 1.15vw, 17px)` — subordinate to the captions everywhere but very short, wide windows (under ~486px tall and over ~1300px wide), where the captions follow height down to their floor.
 - **Scroll hint**: a flat `14px`. Work-history sub-lines are `0.85em` of the caption.
 
 ## Graph paper
@@ -43,12 +43,12 @@ Fluid `clamp()`s in `index.css` — there are no breakpoints, so these are the w
 
 ## Strokes & fills
 
-- The doodle SVG: `stroke: rgb(var(--ink))`, `stroke-width: 2.6` (`STROKE_WIDTH`), round caps/joins, `fill: none`. That is 2.6 **world** units — the group scale and the slice scale cancel, so on screen it renders at `STROKE_WIDTH × D / DOODLE_WORLD_SIZE` px, i.e. 2.6px only at the 500px cap and thinner as the drawing shrinks.
-- **One pen for the whole page.** The scroll arrow takes that same px value from `--hint-stroke` (engine-set) with `non-scaling-stroke`; the resume underline is a deliberate exception at a flat 1.6px, since it is subordinate chrome rather than part of the drawing.
-- The engine turns fills on for a few slots via token strings with alpha: the tie (strokes 5, 15) fills solid ink during the work stage; the eyes (strokes 1–3) fill during the stick-figure/spider stages; the coffee surface reuses an eye slot's fill during the coffee stage.
+- The doodle SVG: `stroke: currentColor`, inheriting the page's ink text colour, `stroke-width: 2.6` (`STROKE_WIDTH`), round caps/joins, `fill: none`. That is 2.6 **world** units — the group scale and the slice scale cancel, so on screen it renders at `STROKE_WIDTH × D / DOODLE_WORLD_SIZE` px, i.e. 2.6px only at the 500px cap and thinner as the drawing shrinks.
+- **One pen for the whole page.** The scroll arrow takes that same px value from `--hint-stroke` (engine-set) with `non-scaling-stroke`, floored at 1px so it survives a drawing shrunk away at high zoom; the link underlines (`ScribbleLink`) are a deliberate exception at a flat 1.6px, since they are subordinate chrome rather than part of the drawing.
+- The engine turns fills on for the slots `FILLS` lists, as `currentColor` with a `fill-opacity`: the tie (strokes 5, 15) fills solid ink during the work stage; the eyes (strokes 1, 2) fill during the two stick-figure stages; the coffee surface reuses an eye slot's fill during the coffee stage.
 
 ## Animation timing
 
-- `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `REVEAL_HALF`/`REVEAL_RAMP` (0.55 / 3.2, the reveal-window shape behind every caption wipe and fill), `STROKE_WIDTH` (2.6), `DOODLE_WORLD_SIZE`/`DOODLE_MAX_PX` (both 500 — the nominal doodle width in world units and the on-screen px cap; equal by coincidence, retune separately), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02), `HINT_NUDGE_PX` (9 — the arrow bob's travel; must match the `hint-nudge` keyframe, since a transform never reaches layout).
+- `constants/animations.ts`: `SCROLL_LENGTH_VH` (800, total scroll track), `EASE` (0.12/frame progress low-pass, 1 under reduced-motion), `BOIL_MS` (160, idle-wobble retick), `BOIL_AMP` (3.5, wobble amplitude), `DWELL_HOLD`/`DWELL_MORPH` (0.30 / 0.40, the hold-then-morph shaping), `MORPH_STAGGER` (0.5, how much of each morph the strokes' top-to-bottom starts spread over), `REVEAL_HALF`/`REVEAL_RAMP` (0.5 / 3.2, the reveal-window shape behind every caption wipe, the axis labels, and the tie's sharp-corner switch), `STROKE_WIDTH` (2.6), `DOODLE_WORLD_SIZE`/`DOODLE_MAX_PX` (both 500 — the nominal doodle width in world units and the on-screen px cap; equal by coincidence, retune separately), `CAP_GAP` (36, drawing→caption gap), `HINT_FADE` (0.02), `HINT_NUDGE_PX` (9 — the arrow bob's travel; must match the `hint-nudge` keyframe, since a transform never reaches layout).
 - Geometry counts live in `lib/doodle.ts`: `NP` (12 points/stroke), `NS` (18 strokes/stage).
-- The only CSS-side motion is the scroll cue: an `opacity` transition on the hint, and `hint-nudge` on its arrow — a 9px bob, 1.1s `ease-in-out` each way on `alternate` (2.2s round trip, seamless reversal). `prefers-reduced-motion`: `index.css` clamps transition durations and disables animations; the engine snaps progress and skips the boil.
+- The only CSS-side motion is the scroll cue: an `opacity` transition on the hint, and `hint-nudge` on its arrow — a 9px bob, 1.1s `ease-in-out` each way on `alternate` (2.2s round trip, seamless reversal). `prefers-reduced-motion`: `index.css` removes transitions and animations; the engine snaps progress and skips the boil.

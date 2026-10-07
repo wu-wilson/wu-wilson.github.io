@@ -4,14 +4,13 @@ import { NS } from '../lib/doodle';
 
 import { STROKE_WIDTH } from '../constants/animations';
 
-/** Ink stroke/fill, resolved from the CSS token so the palette stays in one place. */
-const INK = 'rgb(var(--ink))';
-
 /**
  * The single SVG that holds the whole doodle: the `NS` stroke paths (`data-s`) and the rampr axis
  * labels (`data-axes`), inside the group the engine transforms to place and scale them
  * (`data-zoom`). Paths render empty — the engine paints their `d`, opacity, and fill every frame.
- * `aria-hidden` because the captions already carry the drawing's meaning in prose.
+ * Everything draws in `currentColor`, inherited from the page's ink text colour, so a forced-colors
+ * theme recolours the drawing with the text. `aria-hidden` because the captions already carry the
+ * drawing's meaning in prose.
  * @returns The doodle SVG
  */
 export const DoodleStage: FC = () => (
@@ -20,16 +19,17 @@ export const DoodleStage: FC = () => (
     preserveAspectRatio="xMidYMid slice"
     aria-hidden="true"
     fill="none"
+    stroke="currentColor"
     strokeLinecap="round"
     strokeLinejoin="round"
-    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', stroke: INK }}
+    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
   >
     <g data-zoom strokeWidth={STROKE_WIDTH}>
       {Array.from({ length: NS }, (_, i) => (
         <path key={i} data-s={i} />
       ))}
       <g data-axes opacity={0}>
-        <text x={762} y={662} fontSize={34} stroke="none" style={{ fill: INK }}>
+        <text x={762} y={662} fontSize={34} stroke="none" fill="currentColor">
           time
         </text>
         <text
@@ -38,7 +38,7 @@ export const DoodleStage: FC = () => (
           fontSize={34}
           stroke="none"
           transform="rotate(-90 520 480)"
-          style={{ fill: INK }}
+          fill="currentColor"
         >
           hiring
         </text>

@@ -1,7 +1,7 @@
 /**
- * The seven finished doodles and their visual centres, built from the stroke constructors in
- * `lib/doodle.ts`. Coordinates are the design prototype's verbatim — they are the single source
- * of truth for the geometry; retune here, never in the engine.
+ * The seven finished doodles, their visual centres, and the strokes each fills, built from the
+ * stroke constructors in `lib/doodle.ts`. Coordinates are hand-placed and are the single source of
+ * truth for the geometry; retune here, never in the engine.
  */
 
 import { circle, collapse as C, ell, poly, seg } from '../lib/doodle';
@@ -9,14 +9,14 @@ import { circle, collapse as C, ell, poly, seg } from '../lib/doodle';
 import type { Point, Stage } from '../types/doodle';
 
 /**
- * The seven doodles, each a set of `NS` strokes, in scroll order: `0` curious stick figure with
- * "?", `1` krawly spider, `2` tallies receipt, `3` rampr graph, `4` stick figure in a tie with
+ * The seven doodles, each a set of `NS` strokes, in scroll order: `0` stick figure raising a
+ * hammer, `1` krawly web, `2` tallies receipt, `3` rampr graph, `4` stick figure in a tie with
  * briefcase, `5` coffee, `6` mail. Adjacent stages morph stroke-for-stroke, so slot `i` is one pen
  * stroke's identity through the film, not a fixed feature — slot 5 is an arm here, the tie body in
  * stage 4, a steam squiggle in stage 5. Slots a stage doesn't need park at a collapse point.
  */
 export const STAGES: Stage[] = [
-  // 0 — curious stick figure with a hand-drawn "?"
+  // 0 — stick figure raising a hammer
   [
     circle(766, 369, 65), ell(746, 353, 3.4, 5.6), ell(786, 353, 3.4, 5.6),
     poly([742, 386], [756, 396], [776, 396], [790, 386]), seg(730, 597, 802, 597),
@@ -24,13 +24,20 @@ export const STAGES: Stage[] = [
     seg(832, 446, 913, 360), seg(880, 328, 902, 304), seg(902, 304, 968, 368), seg(968, 368, 946, 392),
     seg(946, 392, 880, 328), seg(752, 433, 730, 597), seg(780, 433, 802, 597), C(800, 420), C(800, 420),
   ],
-  // 1 — krawly: a spider hanging from a single thread
+  // 1 — krawly: a spider web, eight spokes and four rings of thread sagging between them
   [
-    seg(800, 90, 800, 372), circle(800, 412, 40), ell(786, 401, 2.8, 4.6), ell(814, 401, 2.8, 4.6),
-    poly([764, 398], [716, 372], [688, 336]), poly([762, 414], [706, 414], [672, 400]),
-    poly([766, 430], [714, 452], [688, 486]), poly([836, 398], [884, 372], [912, 336]),
-    poly([838, 414], [894, 414], [928, 400]), poly([834, 430], [886, 452], [912, 486]),
-    C(800, 420), C(800, 420), C(800, 420), C(800, 420), C(800, 420), C(800, 420), C(800, 420), C(800, 420),
+    poly([828, 232], [870, 283], [930, 303], [925, 373], [959, 434], [915, 474], [900, 531], [829, 530], [766, 570]),
+    seg(800, 400, 835, 192), seg(800, 400, 965, 277),
+    poly([766, 570], [724, 517], [662, 497], [666, 433], [635, 378], [687, 329], [704, 258], [770, 263], [828, 232]),
+    seg(800, 400, 1016, 447), seg(800, 400, 932, 573), seg(800, 400, 760, 600), seg(800, 400, 625, 523),
+    seg(800, 400, 589, 372), seg(800, 400, 675, 215),
+    poly([820, 282], [851, 317], [896, 329], [893, 380], [919, 426], [887, 457], [878, 502], [823, 495], [777, 518]),
+    poly([777, 518], [745, 483], [698, 472], [700, 425], [675, 384], [717, 349], [732, 298], [779, 303], [820, 282]),
+    poly([813, 320], [835, 343], [867, 350], [863, 386], [879, 417], [856, 436], [848, 463], [814, 463], [784, 482]),
+    poly([784, 482], [765, 455], [737, 444], [736, 415], [718, 389], [746, 367], [756, 335], [787, 336], [813, 320]),
+    poly([806, 362], [817, 373], [832, 376], [830, 393], [837, 408], [827, 417], [823, 430], [807, 430], [792, 439]),
+    poly([792, 439], [782, 428], [766, 424], [768, 408], [762, 395], [774, 384], [778, 368], [793, 369], [806, 362]),
+    C(800, 400), C(800, 400),
   ],
   // 2 — tallies: a receipt with a torn zigzag bottom
   [
@@ -84,5 +91,12 @@ export const STAGES: Stage[] = [
  * regardless of where its strokes happen to fall in the `1600×900` world.
  */
 export const ANCHORS: Point[] = [
-  [810, 498], [800, 397], [800, 372], [785, 458], [815, 498], [818, 424], [801, 414],
+  [810, 498], [800, 400], [800, 372], [785, 458], [815, 498], [818, 424], [801, 414],
 ];
+
+/**
+ * The slots each stage draws as solid ink rather than outline: the stick figures' eyes (1, 2), the
+ * tie (5, 15), and the coffee's surface (2 again). The engine fades a fill with its stroke's morph
+ * when only one side of the morph fills that slot, and holds it solid when both do.
+ */
+export const FILLS: number[][] = [[1, 2], [], [], [], [1, 2, 5, 15], [2], []];

@@ -1,12 +1,18 @@
 import type { CSSProperties, FC } from 'react';
 
+import { ScribbleLink } from './ScribbleLink';
+
 import { CONTACT_LINKS, PROJECTS, WORK_HISTORY } from '../constants/content';
 
 /** A dimmed `.85em` sub-line for the work-history entries. */
 const subLineStyle: CSSProperties = { fontSize: '0.85em', color: 'rgb(var(--ink-soft))' };
 
-/** A `.85em` contact link — smaller, but keeps the teal link color. */
-const linkSubStyle: CSSProperties = { fontSize: '0.85em' };
+/**
+ * A `.85em` contact link — smaller, but keeps the teal link color. The taller line keeps the
+ * stacked links more than 24px apart at the phone caption size, so each clears the tap-target
+ * minimum.
+ */
+const linkSubStyle: CSSProperties = { fontSize: '0.85em', lineHeight: 2 };
 
 /** Column wrapper for the multi-line captions (work, contact). */
 const stackStyle: CSSProperties = {
@@ -32,31 +38,22 @@ export const Captions: FC = () => (
 
     <div data-ann={1}>
       <span>
-        i built{' '}
-        <a href={PROJECTS.krawly.href} target="_blank" rel="noreferrer">
-          {PROJECTS.krawly.label}
-        </a>
-        , a little spider that maps any website's dependencies into a graph.
+        i built <ScribbleLink href={PROJECTS.krawly.href} label={PROJECTS.krawly.label} />, a
+        crawler that maps any website and flags what's broken.
       </span>
     </div>
 
     <div data-ann={2}>
       <span>
-        then came{' '}
-        <a href={PROJECTS.tallies.href} target="_blank" rel="noreferrer">
-          {PROJECTS.tallies.label}
-        </a>
-        , a bill splitter that turns receipts into shareable breakdowns.
+        then came <ScribbleLink href={PROJECTS.tallies.href} label={PROJECTS.tallies.label} />, a
+        bill splitter that turns receipts into shareable breakdowns.
       </span>
     </div>
 
     <div data-ann={3}>
       <span>
-        and{' '}
-        <a href={PROJECTS.rampr.href} target="_blank" rel="noreferrer">
-          {PROJECTS.rampr.label}
-        </a>
-        , which shows who's ramping up hiring and who's slowing down.
+        and <ScribbleLink href={PROJECTS.rampr.href} label={PROJECTS.rampr.label} />, which shows
+        who's ramping up hiring and who's slowing down.
       </span>
     </div>
 
@@ -78,19 +75,9 @@ export const Captions: FC = () => (
     <div data-ann={6}>
       <div style={stackStyle}>
         <span>if you want to build something together, let's talk.</span>
-        {CONTACT_LINKS.map((link) => {
-          const external = !link.href.startsWith('mailto:');
-          return (
-            <a
-              key={link.href}
-              href={link.href}
-              style={linkSubStyle}
-              {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-            >
-              {link.label}
-            </a>
-          );
-        })}
+        {CONTACT_LINKS.map((link) => (
+          <ScribbleLink key={link.href} href={link.href} label={link.label} style={linkSubStyle} />
+        ))}
       </div>
     </div>
   </>

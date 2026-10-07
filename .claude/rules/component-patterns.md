@@ -11,7 +11,7 @@ paths:
 Component and hook files export exactly one thing, laid out in this order:
 
 1. Imports
-2. Module constants and helpers the export reads (style objects, `INK`, `inkFill`) — above, not below, so the export reads top-down
+2. Module constants and helpers the export reads (style objects, `MORPH_ORDER`, `stageWindow`) — above, not below, so the export reads top-down
 3. Props interface (with JSDoc on non-obvious props)
 4. The exported component or hook (with JSDoc above)
 
@@ -36,9 +36,9 @@ Component and hook files export exactly one thing, laid out in this order:
 
 ## Content & data
 
-- The seven doodles live in `constants/stages.ts` (`STAGES`, `ANCHORS`), built from the constructors in `lib/doodle.ts`; the point/stroke/stage types are in `types/doodle.ts`. These coordinates are the design's verbatim source of truth — edit doodles here, not in the engine.
+- The seven doodles live in `constants/stages.ts` (`STAGES`, `ANCHORS`, `FILLS`), built from the constructors in `lib/doodle.ts`; the point/stroke/stage types are in `types/doodle.ts`. These coordinates are the design's source of truth — edit doodles here, not in the engine.
 - Caption copy is JSX in `components/Captions.tsx`; the repeated bits (project/contact links, work-history lines) come from `constants/content.ts`. Timing and layout constants live in `constants/animations.ts`.
 
 ## Limits
 
-- Components stay small and single-purpose (`DoodleStage`, `Captions`, `ScrollHint`, `ResumeLink`, `Notebook`). The engine is the deliberate exception — one cohesive module, documented section by section. Don't split it or lift its per-frame work into React.
+- Components stay small and single-purpose (`DoodleStage`, `Captions`, `ScrollHint`, `ResumeLink`, `ScribbleLink`, `Notebook`). The engine is the deliberate exception — one cohesive module, documented section by section. Don't split it or lift its per-frame work into React.

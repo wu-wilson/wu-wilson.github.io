@@ -27,8 +27,8 @@ export const seg = (x1: number, y1: number, x2: number, y2: number): Stroke =>
   ]);
 
 /**
- * An ellipse sampled into `NP` points, starting at the top and going clockwise (used for the
- * small filled eye ovals, and for every circle).
+ * An ellipse sampled into `NP` points, starting at the top and going clockwise (used for every
+ * oval and circle, from the filled eyes to the coffee mug's rim and surface).
  * @param cx - Centre x
  * @param cy - Centre y
  * @param rx - Horizontal radius

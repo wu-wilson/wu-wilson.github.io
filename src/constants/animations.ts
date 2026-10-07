@@ -1,7 +1,6 @@
 /**
- * Timing, motion, and band-layout constants for the doodle film. Every value here is the
- * prototype's verbatim — port, don't re-derive. Geometry counts (`NP`, `NS`) live in
- * `lib/doodle.ts`.
+ * Timing, motion, and band-layout constants for the doodle film. Every value here is hand-tuned
+ * — retune deliberately, don't re-derive. Geometry counts (`NP`, `NS`) live in `lib/doodle.ts`.
  */
 
 /** Total scroll length of the story, in viewport heights. Longer = slower morphs per scene. */
@@ -27,10 +26,18 @@ export const DWELL_HOLD = 0.3;
 export const DWELL_MORPH = 0.4;
 
 /**
- * Half-width, in stage units, of a stage's reveal window — the shape that wipes captions in and
- * switches fills on. A window is centred on its stage and reaches `REVEAL_HALF` to either side.
+ * Fraction of the morph window over which the strokes' starts are spread, top to bottom; each
+ * stroke morphs over the rest of the window. 0 would move every stroke at once.
  */
-export const REVEAL_HALF = 0.55;
+export const MORPH_STAGGER = 0.5;
+
+/**
+ * Half-width, in stage units, of a stage's reveal window — the shape that wipes captions in,
+ * fades the axis labels, and times the tie's sharp corners. A window is centred on its stage and
+ * reaches `REVEAL_HALF` to either side: half a stage, so one caption closes as the next opens and
+ * the two, which share a box, never print over each other.
+ */
+export const REVEAL_HALF = 0.5;
 
 /** How steeply a reveal window ramps in and out; higher = snappier edges, `1/RAMP` stages wide. */
 export const REVEAL_RAMP = 3.2;

@@ -1,6 +1,11 @@
 import type { CSSProperties, FC } from 'react';
 
-/** Base style for the hint; the engine drives its `opacity`, `top`, `bottom`, and `--hint-stroke`. */
+/**
+ * Base style for the hint; the engine drives its `opacity`, `top`, `bottom`, and `--hint-stroke`.
+ * It starts hidden and the engine shows it, so a load partway through the story never flashes it.
+ * A cue, not a control: once faded it stays in place over the later captions, so it never takes
+ * pointer events.
+ */
 const hintStyle: CSSProperties = {
   position: 'absolute',
   bottom: 12,
@@ -12,13 +17,16 @@ const hintStyle: CSSProperties = {
   gap: 2,
   fontSize: 14,
   color: 'rgb(var(--ink))',
+  opacity: 0,
   transition: 'opacity .5s',
+  pointerEvents: 'none',
 };
 
 /**
  * The "scroll" cue with a hand-drawn down arrow (bowed shaft, stroke-only head), tagged
- * `data-hint`. Visible on load, faded out by the engine after the first bit of scroll; the arrow
- * nudges on a CSS loop (`.hint-arrow` in `index.css`) — the one motion the engine does not drive.
+ * `data-hint`. Shown by the engine at the top of the story and faded out after the first bit of
+ * scroll; the arrow nudges on a CSS loop (`.hint-arrow` in `index.css`) — the one motion the
+ * engine does not drive.
  * @returns The scroll hint
  */
 export const ScrollHint: FC = () => (

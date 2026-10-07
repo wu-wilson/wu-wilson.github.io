@@ -1,7 +1,6 @@
 /**
  * Every link and repeated line on the page, kept out of the JSX so the words are easy to edit.
- * The prototype's exact wording is the source of truth; one-off caption sentences stay inline in
- * `components/Captions.tsx`.
+ * One-off caption sentences stay inline in `components/Captions.tsx`.
  */
 
 /** A labelled link rendered on the page — inside a caption, or the corner resume link. */

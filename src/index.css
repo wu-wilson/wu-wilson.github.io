@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The one handwriting face, self-hosted (latin subset, which covers every character the page
+   renders) and preloaded from `index.html`. Its OFL licence ships beside it in `public/fonts/`. */
+@font-face {
+  font-family: 'Gloria Hallelujah';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/gloria-hallelujah.woff2') format('woff2');
+}
+
 :root {
   /* Color tokens stored as space-separated RGB channels (hex in comments) and consumed via
      `rgb(var(--token) / <alpha-value>)` in tailwind.config.js, so opacity modifiers resolve.
@@ -29,6 +39,8 @@
   }
 
   a {
+    /* Anchors its hand-drawn underline (`.scribble`). */
+    position: relative;
     color: rgb(var(--link));
     text-decoration: none;
     /* Links never wrap mid-word inside a wrapping caption. */
@@ -44,9 +56,11 @@
     color: rgb(var(--ink));
   }
 
+  /* The ring is a box-shadow; the transparent outline is invisible here but is what forced-colors
+     modes (Windows contrast themes), which drop box-shadows, paint in a system colour instead. */
   *:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px rgb(var(--link) / 0.55);
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 2px rgb(var(--link));
     border-radius: 2px;
   }
 }
@@ -76,14 +90,14 @@
     padding-bottom: 0.5em;
   }
 
-  /* Hand-drawn underline: shrink-wrapped to the word, sized in `em` so it tracks the type size.
-     Positioned rather than in flow, because the link's width is shrink-to-fit: an in-flow
-     `width: 100%` here would be a cyclic percentage that each engine resolves its own way (Safari
-     stretched the link to the 300px default replaced width). Out of flow it resolves against an
-     already-definite box. `width: 100%` is load-bearing, not redundant with `left: 0` — an
-     absolutely positioned replaced element drops `right` as over-constrained and falls back to
-     the viewBox's intrinsic ratio, which overhangs the word. */
-  .resume-link svg {
+  /* Every link's hand-drawn underline: shrink-wrapped to the word, sized in `em` so it tracks the
+     type size. Positioned rather than in flow, because a link's width is shrink-to-fit: an in-flow
+     `width: 100%` here would be a cyclic percentage that each engine resolves its own way
+     (Safari stretched the resume link to the 300px default replaced width). Out of flow it
+     resolves against an already-definite box. `width: 100%` is load-bearing, not redundant with
+     `left: 0` — an absolutely positioned replaced element drops `right` as over-constrained and
+     falls back to the viewBox's intrinsic ratio, which overhangs the word. */
+  .scribble {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -128,9 +142,9 @@
     text-align: center;
     /* Height-aware type scale. `2.2vw` alone keys off width only, so rotating a phone inflated
        captions from 15px to ~18.6px on the same physical screen; the `3.5vh` term holds every
-       phone — either orientation — at the 15px floor while leaving desktop and ultrawide at 19px
-       (there, `vh` is large enough that `2.2vw` still wins). */
-    font-size: clamp(15px, min(2.2vw, 3.5vh), 19px);
+       phone — either orientation — at the 15px floor, while desktops and ultrawides reach the 24px
+       cap (both terms clear it there). */
+    font-size: clamp(15px, min(2.2vw, 3.5vh), 24px);
     line-height: 1.7;
     color: rgb(var(--ink));
     padding-bottom: 0.45em;
@@ -138,12 +152,14 @@
   }
 }
 
-/* Reduced motion: the engine already drops the boil and progress easing; also clamp the hint's
-   opacity transition and stop its arrow nudging, so nothing animates on its own. The
-   scroll-scrubbed drawing stays — it is user-driven, not autonomous. */
+/* Reduced motion: the engine already drops the boil and progress easing; also drop the hint's
+   opacity transition and stop its arrow nudging, so nothing animates on its own. `transition: none`
+   rather than a near-zero duration, which would give every element a transition on every property
+   and leave a layout read straight after a style write (the engine's caption measure) a frame
+   stale. The scroll-scrubbed drawing stays — it is user-driven, not autonomous. */
 @media (prefers-reduced-motion: reduce) {
   * {
-    transition-duration: 0.01ms !important;
+    transition: none !important;
     animation: none !important;
   }
 }
